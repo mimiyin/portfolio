@@ -1,0 +1,85 @@
+html, body, div, span, p, img {
+	background: transparent;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	vertical-align: baseline;	
+	font-family: "Lucida Grande", "Lucida", sans-serif;
+	color: #999;
+}
+
+body {
+	width: 100%;
+	min-width: 800px;
+	font-size: 14px;
+	background: black;
+	margin-top: 50px;
+	height: 10000px;
+}
+
+img {
+	border:  none;
+}
+
+ul, ol {
+	-moz-padding-start: 0px;
+	-moz-margin-before: 0px;
+	-moz-margin-after: 0px;
+	
+	-webkit-padding-start: 0px;
+	-webkit-margin-before: 0px;
+	-webkit-margin-after: 0px;
+}
+
+li {
+	list-style-type: none;
+	padding: 0;
+}
+
+/* NAV */
+#nav {
+	position: fixed;
+	bottom: 0px;
+	left: 10%;
+	font-size: 1.5em;
+	background: rgba(255,255,255,.5);
+	padding: .5% 3%;
+}
+
+/* GALLERY */
+
+body {
+	-webkit-transform: scale(.25, .25);
+}
+
+#gallery {
+	width: 400% !important;
+}
+
+.project {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+}
+
+.medium {
+	width: 100%;
+	float : left;
+}
+
+.title-slide {
+	-moz-box-shadow:  inset 0 0 60px rgba(0,0,0,0.33);
+	-webkit-box-shadow:  inset 0 0 60px rgba(0,0,0,0.33);
+	box-shadow:   inset 0 0 60px rgba(0,0,0,0.33);
+	background-color: #fff;
+}
+
+#gallery ul.carousel, #gallery ul.carousel li {
+	width: 100%;
+	height: 10000px;
+}
+
+#gallery ul.carousel li embed, #gallery ul.carousel li .media, #gallery ul.carousel li canvas {
+	width: 100%;
+	height: inherit;
+}

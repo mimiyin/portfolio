@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% load sekizai_tags %}
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<?xml version="1.0" encoding="UTF-8"?>
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<title>Degrees of Chance</title>
+		
+		
+		{% render_block "css" %}
+		{% render_block "js" %}
+		{% block head %}{% endblock %}
+		
+		{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-1.9.0.min.js"></script>{% endaddtoblock %}
+		{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-ui-1.10.0.custom.min.js"></script>{% endaddtoblock %}		
+		{% addtoblock "css" %}<link type="text/css" rel="stylesheet" href="{{STATIC_URL}}css/base.css"/>{% endaddtoblock %}
+		
+		<title>{% block title %}Degrees of Chance{% endblock %}</title>
+	</head>
+	
+	<body>		
+		<script type="text/javascript">
+			var project = '{{ project }}';
+		</script>
+			{% block header %}{% endblock %}
+			{% include "gallery.html" %}
+			{% block body %}
+			{% endblock %}
+			
+	</body>
+		
+</html>

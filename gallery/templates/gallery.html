@@ -1,0 +1,38 @@
+{% load sekizai_tags %}
+{% load jsonify %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/processing.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-plus.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="http://a.vimeocdn.com/js/froogaloop2.min.js?30718-1370038740"></script>{% endaddtoblock %}
+
+<div id="gallery">
+	{% for m, medium in media.items %}
+		<div id="medium-{{m}}" class="medium">
+			{% for project in medium %}
+				{% with project.code|add:".html" as template %}
+					<div id="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
+						<ul class="carousel"> 
+							<li class="title-slide">
+								<span class="project-title">{{project.title}}</span>
+								<span class="project-description">{{project.description}}</span>
+								<span class="project-collaborators">{{project.collaborators}}</span>
+								<span class="project-materials">{{project.materials}}</span>
+								</li>
+							{% include template %}
+					</div>
+				{% endwith %}
+			{% endfor %}		
+		</div>
+	{% endfor %}
+</div>
+
+{% include "nav.html" %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/project.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/control.js"></script>{% endaddtoblock %}
+
+<script type="text/javascript">
+$(window).load(function(){
+	Processing.logger = console;
+	var media = {{media.items | jsonify }};
+	setTimeout( function(){ gallery.control.init(media); }, 500 );
+});
+</script>
