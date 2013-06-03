@@ -40,7 +40,7 @@ gallery.control = null;
 			});	
 			
 			this._nav = $("#nav");
-			this._selector = $("#selector");
+			this._selector = $("#selector").css("top" , control._nav.height()*.06 + "px");
 			
 			//Hook up nav items
 			this._nav.find("#zoom-out").click(function() { control._zoomOut() });
@@ -135,15 +135,15 @@ gallery.control = null;
 			// If we were just zoomed, refit the projects to window size
 			if(this.isZoomedOut)
 				this._fitProjectsToWindow();
-
-			this._nav.delay(2500).slideDown("slow");
 			
 			// Calculate shift
 			var leftShift = this._currentMediumInd - onProject.medium;
 			var topShift =  this._currentProjectInd - onProject.order;	
 			
+			this._nav.delay(2500).slideDown("slow");
+			this._selector.delay(2500).fadeIn("fast");
 			// Shift the selector
-			this._selector.shift(-leftShift, -topShift, 19, this._nav.height()*.27, 3000)
+			this._selector.shift(-leftShift, -topShift, 19.5, this._nav.height()*.35, 500)
 			
 			// Open up this project
 			// Close all others
