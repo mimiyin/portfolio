@@ -1,9 +1,9 @@
 (function( $ ) {
 	$.fn.scrollBottom = function() { 
-		  return $(document).height() - $(window).scrollTop() - $(window).height(); 
+		  return this.height() - $(window).scrollTop() - $(window).height(); 
 		};
 	$.fn.scrollRight = function() { 
-		  return $(document).width() - $(window).scrollLeft() - $(window).width(); 
+		  return this.width() - $(window).scrollLeft() - $(window).width(); 
 		};
 
 	$.fn.shift = function(leftShift, topShift, speed, callback) {

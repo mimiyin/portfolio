@@ -46,7 +46,7 @@ gallery.project = null;
 		    	if(slide.hasClass("live"))
 	    			setTimeout(function(){ thisProject._playPauseResetLiveContent($(slide), "pause"); }, 1000);
 	    		},
-		});
+		}) || null;
 	};
 	
 	Project.prototype._playPauseResetLiveContent = function(slide, action) {
@@ -71,12 +71,9 @@ gallery.project = null;
 	},
 	
 	// Make the carousel go from the beginning
-	Project.prototype.start = function(isPreview) {
+	Project.prototype.start = function() {
 		if(this._carousel) {
-			if(isPreview)
-				this._carousel.play(0, true);
-			else
-				this._carousel.play(0, false);
+			this._carousel.play();
 		}
 	}
 	
@@ -90,21 +87,11 @@ gallery.project = null;
 		});
 	}
 	
-	Project.prototype.shift = function(leftShift, topShift, isSelected) {
-		var speed = 0;
-		var callback;
+	Project.prototype.shift = function(leftShift, topShift, isZoomedIn) {
+		var thisProject = this;
+		var callback = isZoomedIn ? function() { thisProject.stop(); thisProject.start(); } : function() { thisProject.stop(); }
+		this.div.shift(leftShift, topShift, isZoomedIn ? 3000 : 2500, callback );
 		if(this._carousel) this._carousel.stop();
-		if(isSelected) {
-			speed = 3000;
-			callback = this.start;
-		}
-		else {
-			speed = 2500;
-			callback = this.stop;
-		}
-		
-		this.div.shift(leftShift, topShift, speed, callback);
-
 	}
 		
 	// Zoom out into gallery map view
@@ -118,7 +105,6 @@ gallery.project = null;
 		}, "slow", function() {
 			thisProject.onResizeHeight();
 			});
-		this.start(true);
 	}
 	
 	// Middle aligning media items (videos, sketches)

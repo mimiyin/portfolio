@@ -58,18 +58,17 @@ gallery.carousel = null;
 	}
 	
 	// Cycle through all the slides
-	Carousel.prototype.play = function(slideKey, isPreview) {
+	Carousel.prototype.play = function(slideKey) {
+		
 		// Interrupt all previous animations
 		this._slides.stop(true, true);
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey) || 0;
-		var cycle = function(index) {
+		function Cycle(index) {
+			var isPreview = gallery.control.isZoomedOut;
+
 			// Loop if in preview mode
-			if(isPreview)
-				prevSlide = index > 0 ? index-1 : thisCar._slides.length-1;
-			else
-				prevSlide = index-1;
-			thisCar.goFromSlide(prevSlide);
+			thisCar.goFromSlide(index > 0 ? index-1 : thisCar._slides.length-1);
 			thisCar.goToSlide(index, function(){
 				// If you've reached the end of the slide, stop cycling
 				// Unles you're in preview mode
@@ -80,10 +79,10 @@ gallery.carousel = null;
 						return;
 					}
 				}
-				setTimeout(function(){ cycle(index+1) }, isPreview ? Math.random()*5000 : 0);					
+				setTimeout(function(){ Cycle(index+1); }, isPreview ? Math.random()*5000 : 0);					
 			});
 		}
-		cycle(index);
+		this._cycle = (new Cycle(index));
 	}
 	
 	// Stop all animation.
@@ -91,6 +90,7 @@ gallery.carousel = null;
 	Carousel.prototype.stop = function(slideKey) {
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey) || 0;
+		delete this._cycle; ;
 		$.each(this._slideObjs, function(s, slideObj) {
 			slideObj.slide.stop(true, true);			
 			thisCar.goToSlide(index);
@@ -107,10 +107,11 @@ gallery.carousel = null;
 			setTimeout(function() {
 				if(callback)
 					callback();
-			}, slideObj.delay);
-			
-			thisCar.onSlideAfter(slide, index, index-1);			
+			}, slideObj.delay);			
 		});
+		
+		// Kick off media before the fadeIn completes
+		setTimeout(function() { thisCar.onSlideAfter(slide, index, index-1) }, slideObj.fadeIn*.67 );
 	}
 	// Leave a particular slide
 	Carousel.prototype.goFromSlide = function(slideKey, callback) {
