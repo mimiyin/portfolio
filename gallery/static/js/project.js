@@ -90,7 +90,7 @@ gallery.project = null;
 	Project.prototype.shift = function(leftShift, topShift, isZoomedIn) {
 		var thisProject = this;
 		var callback = isZoomedIn ? function() { thisProject.stop(); thisProject.start(); } : function() { thisProject.stop(); }
-		this.div.shift(leftShift, topShift, isZoomedIn ? 3000 : 2500, callback );
+		this.div.shift(leftShift, topShift, 100, $(window).height(), isZoomedIn ? 3000 : 2500, callback );
 		if(this._carousel) this._carousel.stop();
 	}
 		

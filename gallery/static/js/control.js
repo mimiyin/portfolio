@@ -40,6 +40,8 @@ gallery.control = null;
 			});	
 			
 			this._nav = $("#nav");
+			this._selector = $("#selector");
+			
 			//Hook up nav items
 			this._nav.find("#zoom-out").click(function() { control._zoomOut() });
 			var thisCar = this;
@@ -89,7 +91,7 @@ gallery.control = null;
 			this._initSize();
 						
 			// Start out zoomed out
-			this._zoomeOut();			
+			this._zoomOut();			
 		},
 		
 		// Gallery Map
@@ -139,6 +141,9 @@ gallery.control = null;
 			// Calculate shift
 			var leftShift = this._currentMediumInd - onProject.medium;
 			var topShift =  this._currentProjectInd - onProject.order;	
+			
+			// Shift the selector
+			this._selector.shift(-leftShift, -topShift, 19, this._nav.height()*.27, 3000)
 			
 			// Open up this project
 			// Close all others

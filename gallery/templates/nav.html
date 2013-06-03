@@ -1,4 +1,5 @@
-<ul id="nav">
+<div id="nav-wrapper">
+	<ul id="nav">
 	{% for m, medium in media.items %}
 			<ul id="nav-for-medium-{{m}}" class="nav-medium">
 				{% for project in medium %}
@@ -10,8 +11,10 @@
 				{% endfor %}		
 			</ul>
 		{% endfor %}
-	<ul id="nav-extras" class="nav-medium">
-		<li id="zoom-out">Zoom out</li>
-		<li id="magic-eight-ball">Magic 8 ball</li>
+		<ul id="nav-extras" class="nav-medium">
+			<li id="zoom-out">Zoom out</li>
+			<li id="magic-eight-ball">Magic 8 ball</li>
+		</ul>
+		<div id="selector"></div>
 	</ul>
-</ul>	
+</div>	

@@ -6,10 +6,10 @@
 		  return this.width() - $(window).scrollLeft() - $(window).width(); 
 		};
 
-	$.fn.shift = function(leftShift, topShift, speed, callback) {
+	$.fn.shift = function(leftShift, topShift, leftShiftMult, topShiftMult, speed, callback) {
 		this.animate({
-			top : "+=" + topShift * $(window).height(),
-			left : "+=" + leftShift*100 + "%",
+			left : "+=" + leftShift * leftShiftMult + "%",
+			top : "+=" + topShift * topShiftMult,
 		}, speed);
 		
 		// Start animating in at 80% completion

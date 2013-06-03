@@ -120,7 +120,7 @@ li {
 
 /* NAV */
 
-#nav {
+#nav-wrapper {
 	position: fixed;
 	bottom: 0;
 	right: 10%;
@@ -131,11 +131,29 @@ li {
 	opacity: .5;
 	z-index: 2;
 }
+
+#nav {
+	float: left;
+	width: 100%;
+	height: inherit;
+}
+
 #nav ul {
+	position: relative;
 	float: left;
 	width: 20%;
 }
 
 #nav ul li {
 	cursor: pointer;
+}
+
+#nav #selector {
+	position: absolute;
+	top: 6%;
+	left: .5%;
+	width: 18%;
+	height: 27%;
+	border: 2px solid white;
+	background: transparent;
 }
