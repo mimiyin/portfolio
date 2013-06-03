@@ -31,6 +31,7 @@ class Project(models.Model):
     collaborators = models.CharField(max_length=1000, blank=True)
     description = models.TextField(max_length=10000, blank=True)
     materials = models.TextField(max_length=10000, blank=True)
+    music = models.TextField(max_length=10000, blank=True)
     presenters = models.TextField(max_length=10000, blank=True)
     date_created = models.CharField(max_length=250)
     url = models.URLField(blank=True)
