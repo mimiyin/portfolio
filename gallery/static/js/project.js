@@ -3,6 +3,8 @@ gallery.project = null;
 
 (function(){
 	
+	var Carousel = gallery.carousel;
+	
 	var sketch = {
 			pause : function(sketch) { sketch.noLoop() },
 			play : function(sketch) { sketch.loop() },
@@ -17,7 +19,6 @@ gallery.project = null;
 		}
 	
 	var Project = function Project(project, percHeight) {
-		var thisProject = this;
 		this.code = project.code;
 		this.medium = project.medium;
 		this.order = project.order;
@@ -26,31 +27,26 @@ gallery.project = null;
 		this.div = $("#" + this.code);
 		
 		// Find live elements
-		this._live = [];		
-		$.each(this.div.find($(".live")), function(e, element){
-			thisProject._live.push(element);
+		this._live = this.div.find($(".live")) || [];	
+		
+		var thisProject = this;		
+		// Find Processing sketches
+		this._sketches = [];
+		$.each(this.div.find($("[type=sketch] canvas")), function(e, el){
+			thisProject._sketches.push(Processing.getInstanceById($(el).attr('id')));
 		})
 		
 		// Wire up the carousel
-		this._carousel = $(this.div.find("ul.carousel")).bxSlider({
-			auto: false,
-			pager: false,
-			controls: false,
-			//mode: "fade",
-		    pause: 10000,
-		    infiniteLoop: true,
-		    startingSlide: 1,
+		this._carousel = new Carousel($(this.div.find("ul.carousel")), {
 		    onSlideAfter: function (slide, oldIndex, newIndex){
 		    	if(slide.hasClass("live"))
 		    		thisProject._playPauseResetLiveContent($(slide), "play");
 		    	},
 		    onSlideBefore: function (slide, oldIndex, newIndex){
 		    	if(slide.hasClass("live"))
-	    			thisProject._playPauseResetLiveContent($(slide), "pause");
+	    			setTimeout(function(){ thisProject._playPauseResetLiveContent($(slide), "pause"); }, 1000);
 	    		},
-		});	
-		
-		
+		});
 	};
 	
 	Project.prototype._playPauseResetLiveContent = function(slide, action) {
@@ -68,61 +64,90 @@ gallery.project = null;
 			player = $f(iframe);
 			func[action](player);
 			break;
+		default:
+			return;
 		}
 
 	},
 	
-	// Make the carousel go, from the beginning
-	Project.prototype.start = function(slide) {
+	// Make the carousel go from the beginning
+	Project.prototype.start = function(isPreview) {
 		if(this._carousel) {
-			this._carousel.startAuto();
-			this._carousel.goToSlide(slide);
+			if(isPreview)
+				this._carousel.play(0, true);
+			else
+				this._carousel.play(0, false);
 		}
 	}
 	
 	// Stop the carousel
 	// Stop all live elements
 	Project.prototype.stop = function() {
+		if(this._carousel) this._carousel.stop();
 		var thisProject = this;
-		if(this._carousel) this._carousel.stopAuto();
-		$.each(this._live, function(e, element){
-			thisProject._playPauseResetLiveContent(element, "pause");
+		$.each(this._live, function(e, el){
+			thisProject._playPauseResetLiveContent($(el), "pause");
 		});
 	}
+	
+	Project.prototype.shift = function(leftShift, topShift, isSelected) {
+		var speed = 0;
+		var callback;
+		if(this._carousel) this._carousel.stop();
+		if(isSelected) {
+			speed = 3000;
+			callback = this.start;
+		}
+		else {
+			speed = 2500;
+			callback = this.stop;
+		}
 		
-	Project.prototype.open = function() {
-		var thisProject = this;
-		this.div.toggleClass("isOn", true, 1000, thisProject.start);
+		this.div.shift(leftShift, topShift, speed, callback);
+
 	}
-	Project.prototype.close = function() {
+		
+	// Zoom out into gallery map view
+	Project.prototype.zoomOut = function(h) {
 		var thisProject = this;
-		this.div.toggleClass("isOn", false, 500, thisProject.stop);
+		this.div.animate({
+			top : 0,
+			left : 0,
+			height : h + "px",
+			overflow : 'hidden',
+		}, "slow", function() {
+			thisProject.onResizeHeight();
+			});
+		this.start(true);
 	}
 	
-	Project.prototype.zoomOut = function() {
-		//var thisProject = this;
-		//this.open();
-		//this.div.find("html").css("zoom", .33);
-		// Resize the height
-		//this.div.height($(window).height()*this._percHeight);
-		//this._carousel.height(this.div.height());
-		//this._carousel.find("li").width(thisProject.div.width()*.25);
-		//this.start(0);
+	// Middle aligning media items (videos, sketches)
+	Project.prototype.onResizeHeight = function() {
+		if(this._carousel)
+			this._carousel.middleAlignMedia();
 	}
-
-	Project.prototype.resize = function() {
-		this.div.width("100%");
-		this.div.css("min-height", $(window).height());
-		this.div.find(".bx-viewport").height($(window).height());
-		this.div.find("ul.carousel").height($(window).height());
-		this.div.find("li").height($(window).height());
-	}
+	
+	// Make project div the size of the window
+	Project.prototype.fitToWindow = function() {
+		this.div.width($(window).width());
+		this.div.height($(window).height());
+		
+		// Scale this project's Processing sketches
+		$.each(this._sketches, function(s, sketch){
+			var size = sketch.getSize();
+			var width = size.x;
+			var height = size.y;
+				var scaleX = $(window).width()/width || 0;
+			sketch.resize(scaleX, 1);
+			});	
+		
+		this.onResizeHeight();
+		}
 	
 	Project.prototype.getLoc = function() {
 		return this.div.offset();
 	}
 	
 	gallery.project = Project;
-	
 
 }());

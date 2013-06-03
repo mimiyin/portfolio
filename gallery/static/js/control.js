@@ -2,35 +2,49 @@ var gallery = gallery || {};
 gallery.control = null;
 
 (function (){
+	var utils = gallery.utils;
 	var control = {
 		_isZoomedOut : false,
-		_currentMedium : null,
+		_currentMediumInd : 0,
+		_currentProjectInd : 0,
 		_currentProject : null,
 		_media : [],	
 		_projects : {},
 		_sketches : [],
+		_maxMediaCount : 0,
 		init : function(media) {
 			this._sketches = $.extend([], Processing.instances);
-
+			
 			// Iterate through all the projects
 			// Create a project object for each
 			$.each(media, function(m, med){
+				if(med.length > control._maxMediaCount)
+					control._maxMediaCount = med.length;
 				control._media.push([]);
 				$.each(med, function(p, project){
 					var newProject = new gallery.project(project, 1/med.length);
-					control._media[m].push(project);
+					control._media[m].push(newProject);
 					control._projects[project.code] = newProject;
-					
+										
 					//Add click listener for each project on project div
 					newProject.div.click( newProject, function(e){ 
 						if(control._isZoomedOut) {
-							//control._zoomIn(e.data); 
+							console.log(e.data);
+							control._zoomIn(e.data); 
 							}
 						});
 					// And project nav item
-					newProject.navItem.click(newProject, function(e){ control._zoomIn(e.data); });
+					newProject.navItem.click( newProject, function(e){ 
+						control._zoomIn(e.data); });
 				});
 			});	
+			
+			this._nav = $("#nav");
+			//Hook up nav items
+			this._nav.find("#zoom-out").click(function() { control._zoomOut() });
+			var thisCar = this;
+			console.log(utils.getRandom(thisCar._projects));
+			//this._nav.find("#magic-eight-ball").click(function() { control._zoomIn(utils.getRandom(thisCar._projects)) });
 			
 			// When scrolled to project edge, open adjacent project
 /* 			$(window).scroll(function(){
@@ -57,59 +71,96 @@ gallery.control = null;
 				// Only resize what's open
 				//control._resize();
 			});
-			
-			// Dynamically size vimeo videos
-			$(".vimeo").height($(".vimeo").width()*.562);
+
+			// Resize everything
+			this._initSize();
 						
 			// Start out zoomed out
 			this._zoomOut();
 			
-			// Resize everything
-			this._resizeAll();
 		},
 		
+		// Gallery Map
 		_zoomOut : function() {
 			console.log("ZOOMING OUT");
-//			$("#gallery").toggleClass("preview", true, 1000);
-//			$.each(this._projects, function(p, project){
-//				project.zoomOut();
-//			});
+			this._nav.slideUp("fast");
+			this._currentMediumInd = 0;
+			this._currentProjectInd = 0;
+			var media = $(".medium");
+			var numMedium = media.length;
+			var scaleX = 1/numMedium;
+			$.each(media, function(m, med){
+				var mediumEl = $(med);
+				var scale = "scale(" + scaleX + "," + scaleX + ")";
+				var translateX = -150 + m*400;
+				var transform = scale + " translate(" + translateX + "%, -150%)";
+				mediumEl
+					.switchClass("view", "preview", 1000)
+					.css({
+						"transform" : transform,
+						"-moz-transform" : transform,
+						"-webkit-transform" : transform,
+						});
+					// Grab the projects for this medium
+					var medium = control._media[m];
+					// Scale the height relative to medium with maxNum of projects
+					var height = $(window).height()*control._maxMediaCount/medium.length;
+					$.each(medium, function(p, project){
+						project.zoomOut(height);
+						});					
+				});			
 			control._isZoomedOut = true;
 		},
+		
+		// Open project
 		_zoomIn : function(onProject) {
-			console.log("ZOOMING IN");
-			$("#gallery").toggleClass("preview", false, 500);
-			this._currentMedium = onProject.medium;
-			this._currentProject = onProject;
+			console.log("ZOOMING IN ON: " + onProject.code);
+			
+			// If we were just zoomed, refit the projects to window size
+			if(this._isZoomedOut)
+				this._fitProjectsToWindow();
+
+			this._nav.delay(2500).slideDown("slow");
+			// Don't do anything if it's the same project
+			if(this._currentProject && onProject.code == this._currentProject.code)
+				return;
+			
+			// Calculate shift
+			var leftShift = this._currentMediumInd - onProject.medium;
+			var topShift =  this._currentProjectInd - onProject.order;	
 			
 			// Open up this project
 			// Close all others
+			var thisProject = this;
 			$.each(this._projects, function(p, project){
-				if(p == onProject.code) {
-					project.open();
-					project.start();	
-				}
-				else {
-					project.stop();
-					project.close();
-				}
+				// x-shift, y-shift, isSelected
+				project.shift(leftShift, topShift, project.code == onProject.code);
 			});			
-			control._isZoomedOut = false;
+
+			$(".medium").switchClass("preview", "view", 500);
+			this._currentMediumInd = onProject.medium;
+			this._currentProjectInd = onProject.order;
+			this._currentProject = onProject;
+
+			this._isZoomedOut = false;
 		},
 		
-		_resizeAll : function(){	
-			// Resize everything
+		_initSize : function(){	
+			
+			$("#gallery").height($(window).height());
+			
+			this._fitProjectsToWindow();
+			
+			// Dynamically size vimeo videos
+			$(".vimeo").height($(".vimeo").width()*.562);
+		},
+
+		// Resize everything to window
+		_fitProjectsToWindow : function() {
 			$.each(this._projects, function(p, project){
-				project.resize();
+				project.fitToWindow();
 			});
-			$.each(this._sketches, function(s, sketch){
-				var size = sketch.getSize();
-				var width = size.x;
-				var height = size.y;
- 				var scaleX = $(window).width()/width || 0;
-				sketch.resize(scaleX, 1);
- 			});				
-		}	
+		}
 	}	
 	
 	gallery.control = control;
