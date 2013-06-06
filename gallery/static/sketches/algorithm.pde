@@ -42,7 +42,10 @@ void setup() {
   voicesTH = rollDie(voicesMax);
   colorsTH = rollDie(colorsMax);
   wavesTH = rollDie(wavesMax);
+  
+  noLoop();
 }
+
 
 void draw() {
   scale(scaleX, scaleY);
@@ -66,10 +69,6 @@ void draw() {
 void resize(float _scaleX, float _scaleY) {
 	scaleX = _scaleX;
 	scaleY = _scaleY;
-}
-
-PVector getSize() {
-	return new PVector(width, height);
 }
 
 void updateInstructions() {
@@ -190,8 +189,6 @@ void drawLine(float anchor, float y, color strokeColor) {
 }
 
 void keyPressed() {
-  if (key == 'p') pause();
-  if (key == 'P') play();
   if (key == 'r') reset();
 
   if (key == ENTER) manualOverride = !manualOverride;

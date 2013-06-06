@@ -6,16 +6,94 @@ gallery.project = null;
 	var Carousel = gallery.carousel;
 	
 	var sketch = {
-			pause : function(sketch) { sketch.noLoop() },
-			play : function(sketch) { sketch.loop() },
+			pause : function(sketch) { 
+				sketch.noLoop();
+				try{
+					var audio = sketch.getAudio();
+					this.mute(audio);
+					}
+				catch(e) {
+					console.log(sketch.externals.canvas.id + " has no audio.");
+				}
+
+				},
+			play : function(sketch) { 
+				sketch.loop();
+				try{
+					var audio = sketch.getAudio();
+					if(gallery.control.isZoomedOut)
+						this.mute(audio);
+					else
+						this.unmute(audio);
+					}
+				catch(e) {
+					console.log(sketch.externals.canvas.id + " has no audio.");
+					}
+				},
 			reset : function(sketch) { sketch.reset() },
+			mute : function(audio) { 
+				var turnDown = function() {
+					audio.volume-=.005; 	
+					if(audio.volume > 0)
+						setTimeout(turnDown, 100);
+					else
+						audio.pause();
+					}
+				if(audio)
+					turnDown();
+			},
+			unmute : function(audio) { 
+				var turnUp = function() {
+					audio.play();
+					audio.volume+=.005; 	
+					if(audio.volume < .5)
+						setTimeout(turnUp, 100);
+					}
+				if(audio)
+					turnUp();
+			},
 		}
 
 		
 	var video = {
-			pause : function(video) { video.api("pause") },
-			play : function(video) { video.api("play") },
+			pause : function(video) { 
+				if(gallery.control.isZoomedOut)
+					video.api("setVolume", 0);
+				else
+					this.mute(video);
+				},
+			play : function(video) { 
+				video.api("setVolume", 0);
+				video.api("play");
+
+				if(!gallery.control.isZoomedOut)
+					this.unmute(video);
+				},
 			reset : function(video) { video.api("play") },
+			unmute : function(video) { 
+				var turnUp = function() {
+					video.api("getVolume", function(volume){
+						var newVolume = parseFloat(volume) +.001;
+						video.api("setVolume", newVolume); 
+						if(newVolume < .1)
+							setTimeout(turnUp, 100);
+						});
+					}
+				turnUp();
+				},
+			mute : function(video) { 
+				var turnDown = function() {
+					video.api("getVolume", function(volume){
+						var newVolume = volume - .001;
+						video.api("setVolume", newVolume); 
+						if(newVolume > 0)
+							setTimeout(turnDown, 100);
+						else
+							video.api("pause");
+						});
+				}
+				turnDown();
+			}
 		}
 	
 	var Project = function Project(project, percHeight) {
@@ -87,11 +165,11 @@ gallery.project = null;
 		});
 	}
 	
+	// Shift all projects
 	Project.prototype.shift = function(leftShift, topShift, isZoomedIn) {
 		var thisProject = this;
-		var callback = isZoomedIn ? function() { thisProject.stop(); thisProject.start(); } : function() { thisProject.stop(); }
+		var callback = isZoomedIn ? function() { thisProject.start(); } : function() { thisProject.stop(); }
 		this.div.shift(leftShift, topShift, 100, $(window).height(), isZoomedIn ? 3000 : 2500, callback );
-		if(this._carousel) this._carousel.stop();
 	}
 		
 	// Zoom out into gallery map view
@@ -120,11 +198,12 @@ gallery.project = null;
 		
 		// Scale this project's Processing sketches
 		$.each(this._sketches, function(s, sketch){
-			var size = sketch.getSize();
-			var width = size.x;
-			var height = size.y;
-				var scaleX = $(window).width()/width || 0;
-			sketch.resize(scaleX, 1);
+			var canvas = $(sketch.externals.canvas);
+			var width = canvas.width();
+			var height = canvas.height();
+			var scaleX = $(window).width()/width || 1;
+			var scaleY = $(window).height()/height || 1;
+			sketch.resize(scaleX, scaleY);
 			});	
 		
 		this.onResizeHeight();
