@@ -9,8 +9,8 @@
 	$.fn.shift = function(leftShift, topShift, leftShiftMult, topShiftMult, speed, callback) {
 		this.animate({
 			left : "+=" + leftShift * leftShiftMult + "%",
-			top : "+=" + topShift * topShiftMult,
-		}, speed);
+			top : "+=" + topShift * topShiftMult + "%",
+		}, speed || 0);
 		
 		// Start animating in at 80% completion
 		setTimeout(callback, speed*.8);

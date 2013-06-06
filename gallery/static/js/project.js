@@ -169,7 +169,7 @@ gallery.project = null;
 	Project.prototype.shift = function(leftShift, topShift, isZoomedIn) {
 		var thisProject = this;
 		var callback = isZoomedIn ? function() { thisProject.start(); } : function() { thisProject.stop(); }
-		this.div.shift(leftShift, topShift, 100, $(window).height(), isZoomedIn ? 3000 : 2500, callback );
+		this.div.shift(leftShift, topShift, 100, 100, isZoomedIn ? 3000 : 2500, callback );
 	}
 		
 	// Zoom out into gallery map view
@@ -193,26 +193,29 @@ gallery.project = null;
 	
 	// Make project div the size of the window
 	Project.prototype.fitToWindow = function() {
-		this.div.width($(window).width());
-		this.div.height($(window).height());
+		var newWidth = $(window).width();
+		var newHeight = $(window).height();
+		var oldHeight = this.div.height();
+
+		this.div.width(newWidth);
+		this.div.height(newHeight);
+		
+		//this.div.shift(0, oldHeight-newHeight, 0, 1);
 		
 		// Scale this project's Processing sketches
 		$.each(this._sketches, function(s, sketch){
 			var canvas = $(sketch.externals.canvas);
 			var width = canvas.width();
 			var height = canvas.height();
-			var scaleX = $(window).width()/width || 1;
-			var scaleY = $(window).height()/height || 1;
+			var scaleX = newWidth/width || 1;
+			var scaleY = newHeight/height || 1;
+			console.log("SCALEY: " + scaleY);
 			sketch.resize(scaleX, scaleY);
 			});	
 		
 		this.onResizeHeight();
 		}
-	
-	Project.prototype.getLoc = function() {
-		return this.div.offset();
-	}
-	
+		
 	gallery.project = Project;
 
 }());

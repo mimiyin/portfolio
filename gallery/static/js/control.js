@@ -40,7 +40,7 @@ gallery.control = null;
 			});	
 			
 			this._nav = $("#nav");
-			this._selector = $("#selector").css("top" , control._nav.height()*.06 + "px").delay(2500).fadeIn("slow");
+			this._selector = $("#selector").delay(2500).fadeIn("slow");
 			
 			//Hook up nav items
 			this._nav.find("#zoom-out").click(function() { control._zoomOut() });
@@ -141,8 +141,9 @@ gallery.control = null;
 			var topShift =  this._currentProjectInd - onProject.order;	
 			
 			this._nav.delay(2500).slideDown("slow");
+			
 			// Shift the selector
-			this._selector.shift(-leftShift, -topShift, 19.5, this._nav.height()*.35, 3000)
+			this._selector.shift(-leftShift, -topShift, 19.5, 27, 3000)
 			
 			// Open up this project
 			// Close all others
