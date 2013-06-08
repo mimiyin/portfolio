@@ -120,14 +120,12 @@ gallery.control = null;
 					// Scale the height relative to medium with maxNum of projects
 					var height = $(window).height()*control._maxMediaCount/medium.length;
 					$.each(medium, function(p, project){
-						project.zoomOut(height);
-						if(!isResizing)
-							project.start();
+						project.zoomOut(height, isResizing);
 						});					
 				});			
 			control.isZoomedOut = true;
 		},
-		
+				
 		// Open project
 		_zoomIn : function(onProject) {
 			console.log("ZOOMING IN ON: " + onProject.code);

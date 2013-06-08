@@ -88,7 +88,6 @@ gallery.carousel = null;
 			// If on first slide, leave the last slide
 			thisCar.goFromSlide(index > 0 ? index-1 : thisCar._slides.length-1);
 			
-			console.log(thisCar._el.parent().attr("id") + ": " + index + " of " + thisCar._slides.length);
 			thisCar.goToSlide(index, function(){
 				// If you've reached the end of the slide, stop cycling
 				if(isLastSlide)

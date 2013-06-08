@@ -2,99 +2,7 @@ var gallery = gallery || {};
 gallery.project = null;
 
 (function(){
-	
 	var Carousel = gallery.carousel;
-	
-	var sketch = {
-			pause : function(sketch) { 
-				sketch.noLoop();
-				try{
-					var audio = sketch.getAudio();
-					this.mute(audio);
-					}
-				catch(e) {
-					console.log(sketch.externals.canvas.id + " has no audio.");
-				}
-
-				},
-			play : function(sketch) { 
-				sketch.loop();
-				try{
-					var audio = sketch.getAudio();
-					if(gallery.control.isZoomedOut)
-						this.mute(audio);
-					else
-						this.unmute(audio);
-					}
-				catch(e) {
-					console.log(sketch.externals.canvas.id + " has no audio.");
-					}
-				},
-			reset : function(sketch) { sketch.reset() },
-			mute : function(audio) { 
-				var turnDown = function() {
-					audio.volume-=.005; 	
-					if(audio.volume > 0)
-						setTimeout(turnDown, 100);
-					else
-						audio.pause();
-					}
-				if(audio)
-					turnDown();
-			},
-			unmute : function(audio) { 
-				var turnUp = function() {
-					audio.play();
-					audio.volume+=.005; 	
-					if(audio.volume < .5)
-						setTimeout(turnUp, 100);
-					}
-				if(audio)
-					turnUp();
-			},
-		}
-
-		
-	var video = {
-			pause : function(video) { 
-				if(gallery.control.isZoomedOut)
-					video.api("setVolume", 0);
-				else
-					this.mute(video);
-				},
-			play : function(video) { 
-				video.api("setVolume", 0);
-				video.api("play");
-
-				if(!gallery.control.isZoomedOut)
-					this.unmute(video);
-				},
-			reset : function(video) { video.api("play") },
-			unmute : function(video) { 
-				var turnUp = function() {
-					video.api("getVolume", function(volume){
-						var newVolume = parseFloat(volume) +.001;
-						video.api("setVolume", newVolume); 
-						if(newVolume < .1)
-							setTimeout(turnUp, 100);
-						});
-					}
-				turnUp();
-				},
-			mute : function(video) { 
-				var turnDown = function() {
-					video.api("getVolume", function(volume){
-						var newVolume = volume - .001;
-						video.api("setVolume", newVolume); 
-						if(newVolume > 0)
-							setTimeout(turnDown, 100);
-						else
-							video.api("pause");
-						});
-				}
-				turnDown();
-			}
-		}
 	
 	var Project = function Project(project, percHeight) {
 		this.code = project.code;
@@ -104,15 +12,21 @@ gallery.project = null;
 		this.navItem = $("#nav-for-" + this.code);
 		this.div = $("#" + this.code);
 		this._more = this.div.find('.more');
-		
-		// Find live elements
-		this._live = this.div.find(".live") || [];	
-		
+
 		var thisProject = this;		
+
+		// Find videos
+		this._vimeos = {};	
+		$.each(this.div.find($("iframe.vimeo"), function(v, vimeo){
+			var id = $(vimeo).attr('id');
+			thisProject._vimeos[id] = new VimeoPlayer(vimeo);
+		});
+		
 		// Find Processing sketches
-		this._sketches = [];
-		$.each(this.div.find($("[type=sketch] canvas")), function(e, el){
-			thisProject._sketches.push(Processing.getInstanceById($(el).attr('id')));
+		this._sketches = {};
+		$.each(this.div.find($("[type=sketch] canvas")), function(c, canvas){
+			var id = $(canvas).attr('id');
+			thisProject._sketches[id] = new SketchPlayer(Processing.getInstanceById(id));
 		})
 		
 		// Wire up the carousel
@@ -123,13 +37,11 @@ gallery.project = null;
 		    	else if(callback)
 		    		callback();
 		    	},
-		    onSlideBefore: function (slide, oldIndex, newIndex, callback){
-		    	console.log("LEAVING SLIDE: " + oldIndex + " for " + thisProject.code);
-		    	if(slide.hasClass("live"))
-	    			setTimeout(function(){ thisProject._playPauseResetLiveContent($(slide), "pause", callback); }, 1000);
-		    	else if(callback)
-		    		callback();
-	    		},
+		    onSlideBefore: function (slide, oldIndex, newIndex){
+		    	var id = slide.attr("id");
+		    	if(slide.hasClass("vimeo"))
+	    			setTimeout(function(){ thisProject._playPauseResetLiveContent($(slide), "pause"); }, 1000);
+		    },
 	    	onSlideLast: function() {
 	    		setTimeout(function() { thisProject._more.slideDown("slow"); }, 2500);
 	    		},
@@ -143,17 +55,15 @@ gallery.project = null;
 		var func, player;
 		switch(type) {
 		case "sketch":
-			func = sketch;
-			player = Processing.getInstanceById(this.code);
-			func[action](player);
+			func = sketchPlayer;
+			func[action](Processing.getInstanceById(this.code));
 			if(callback) callback();
 			break;
 		case "video":
-			func = video;
-			var iframe = slide.find('iframe')[0];
-			player = $f(iframe);
-			player.addEvent("finish", callback);
-			func[action](player);
+			func = videoPlayer;
+			if(callback)
+				$f(slide.find('iframe')[0]).addEvent("finish", callback);
+			func[action]($f(slide.find('iframe')[0]), this.code);
 			break;
 		default:
 			return;
@@ -162,6 +72,7 @@ gallery.project = null;
 	
 	// Make the carousel go from the beginning
 	Project.prototype.start = function() {
+		this._isPlaying = true;
 		if(this._carousel) {
 			this._carousel.play();
 		}
@@ -170,6 +81,7 @@ gallery.project = null;
 	// Stop the carousel
 	// Stop all live elements
 	Project.prototype.stop = function() {
+		this._isPlaying = false;
 		if(this._carousel) this._carousel.stop();
 		var thisProject = this;
 		$.each(this._live, function(e, el){
@@ -178,16 +90,20 @@ gallery.project = null;
 	}
 	
 	// Shift all projects
+	// Start the project if we are going to this project
+	// Only stop project if we are leaving this project
 	Project.prototype.shift = function(leftShift, topShift, isZoomedIn) {
+		var callback = isZoomedIn ? function() { thisProject.start(); } : (this._isPlaying ? function() { thisProject.stop(); } : null);		
 		var thisProject = this;
-		var callback = isZoomedIn ? function() { thisProject.start(); } : function() { thisProject.stop(); }
 		this.div.shift(leftShift, topShift, 100, 100, isZoomedIn ? 3000 : 2500, callback );
 	}
 		
 	// Zoom out into gallery map view
-	Project.prototype.zoomOut = function(h) {
-		var thisProject = this;
+	Project.prototype.zoomOut = function(h, isResizing) {
+		if(!isResizing)
+			this.start();
 		this._more.slideUp("fast");
+		var thisProject = this;
 		this.div.animate({
 			top : 0,
 			left : 0,
@@ -208,7 +124,8 @@ gallery.project = null;
 	Project.prototype.resizeSketches = function() {
 		var thisProject = this;
 		// Scale this project's Processing sketches
-		$.each(this._sketches, function(s, sketch){
+		$.each(this._sketches, function(s, sketchObj){
+			var sketch = sketchObj.sketch;
 			var canvas = $(sketch.externals.canvas);
 			var width = canvas.width();
 			var height = canvas.height();
