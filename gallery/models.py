@@ -33,5 +33,6 @@ class Project(models.Model):
     materials = models.TextField(max_length=10000, blank=True)
     music = models.TextField(max_length=10000, blank=True)
     presenters = models.TextField(max_length=10000, blank=True)
+    more = models.TextField(max_length=10000, blank=True)
     date_created = models.CharField(max_length=250)
     url = models.URLField(blank=True)

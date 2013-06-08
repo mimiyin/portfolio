@@ -128,7 +128,7 @@ void go() {
 }
 
 float drawOverlapped(Voice thisVoice, int waveIndex, color strokeColor, float y) {
-  int anchor = int(height/2);
+  int anchor = int(height/2 + height/5);
 
   //fetch correct curve
   switch(waveIndex) {
@@ -154,7 +154,7 @@ float drawOverlapped(Voice thisVoice, int waveIndex, color strokeColor, float y)
 }
 
 float drawStacked(Voice thisVoice, int waveIndex, color strokeColor, float y, float posTotalY, float negTotalY) {
-  int anchor = int(height/2);
+  int anchor = int(height/2 + height/5);
   float totalY = 0;
 
   if (y >=0) {

@@ -101,11 +101,12 @@ gallery.project = null;
 		this.medium = project.medium;
 		this.order = project.order;
 		this._percHeight = percHeight;
-		this.navItem = $("#nav-for-" + this.code);		
+		this.navItem = $("#nav-for-" + this.code);
 		this.div = $("#" + this.code);
+		this._more = this.div.find('.more');
 		
 		// Find live elements
-		this._live = this.div.find($(".live")) || [];	
+		this._live = this.div.find(".live") || [];	
 		
 		var thisProject = this;		
 		// Find Processing sketches
@@ -116,18 +117,28 @@ gallery.project = null;
 		
 		// Wire up the carousel
 		this._carousel = new Carousel($(this.div.find("ul.carousel")), {
-		    onSlideAfter: function (slide, oldIndex, newIndex){
+		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
 		    	if(slide.hasClass("live"))
-		    		thisProject._playPauseResetLiveContent($(slide), "play");
+		    		thisProject._playPauseResetLiveContent($(slide), "play", callback);
+		    	else if(callback)
+		    		callback();
 		    	},
-		    onSlideBefore: function (slide, oldIndex, newIndex){
+		    onSlideBefore: function (slide, oldIndex, newIndex, callback){
+		    	console.log("LEAVING SLIDE: " + oldIndex + " for " + thisProject.code);
 		    	if(slide.hasClass("live"))
-	    			setTimeout(function(){ thisProject._playPauseResetLiveContent($(slide), "pause"); }, 1000);
+	    			setTimeout(function(){ thisProject._playPauseResetLiveContent($(slide), "pause", callback); }, 1000);
+		    	else if(callback)
+		    		callback();
+	    		},
+	    	onSlideLast: function() {
+	    		setTimeout(function() { thisProject._more.slideDown("slow"); }, 2500);
 	    		},
 		}) || null;
 	};
 	
-	Project.prototype._playPauseResetLiveContent = function(slide, action) {
+	// Callback is for telling carousel that it can advance 
+	// to the next slide once  the media has finished
+	Project.prototype._playPauseResetLiveContent = function(slide, action, callback) {
 		var type = slide.attr("type");
 		var func, player;
 		switch(type) {
@@ -135,17 +146,18 @@ gallery.project = null;
 			func = sketch;
 			player = Processing.getInstanceById(this.code);
 			func[action](player);
+			if(callback) callback();
 			break;
 		case "video":
 			func = video;
 			var iframe = slide.find('iframe')[0];
 			player = $f(iframe);
+			player.addEvent("finish", callback);
 			func[action](player);
 			break;
 		default:
 			return;
 		}
-
 	},
 	
 	// Make the carousel go from the beginning
@@ -175,12 +187,14 @@ gallery.project = null;
 	// Zoom out into gallery map view
 	Project.prototype.zoomOut = function(h) {
 		var thisProject = this;
+		this._more.slideUp("fast");
 		this.div.animate({
 			top : 0,
 			left : 0,
 			height : h + "px",
 			overflow : 'hidden',
 		}, "slow", function() {
+			thisProject.resizeSketches();
 			thisProject.onResizeHeight();
 			});
 	}
@@ -191,6 +205,19 @@ gallery.project = null;
 			this._carousel.middleAlignMedia();
 	}
 	
+	Project.prototype.resizeSketches = function() {
+		var thisProject = this;
+		// Scale this project's Processing sketches
+		$.each(this._sketches, function(s, sketch){
+			var canvas = $(sketch.externals.canvas);
+			var width = canvas.width();
+			var height = canvas.height();
+			var scaleX = thisProject.div.width()/width || 1;
+			var scaleY = thisProject.div.height()/height || 1;
+			sketch.resize(scaleX, scaleY);
+			});	
+	}
+	
 	// Make project div the size of the window
 	Project.prototype.fitToWindow = function() {
 		var newWidth = $(window).width();
@@ -199,19 +226,11 @@ gallery.project = null;
 
 		this.div.width(newWidth);
 		this.div.height(newHeight);
+		this.resizeSketches();
 		
 		//this.div.shift(0, oldHeight-newHeight, 0, 1);
 		
-		// Scale this project's Processing sketches
-		$.each(this._sketches, function(s, sketch){
-			var canvas = $(sketch.externals.canvas);
-			var width = canvas.width();
-			var height = canvas.height();
-			var scaleX = newWidth/width || 1;
-			var scaleY = newHeight/height || 1;
-			console.log("SCALEY: " + scaleY);
-			sketch.resize(scaleX, scaleY);
-			});	
+
 		
 		this.onResizeHeight();
 		}

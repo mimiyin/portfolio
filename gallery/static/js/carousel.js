@@ -9,13 +9,14 @@ gallery.carousel = null;
 				isAuto : false,
 		}
 		
-		// exend opions
+		// Extend options
 		this._options = $.extend( {}, defaults, options );
 		this._el = element;
 		
 		// Seeding slide nav events
 		this.onSlideAfter = this._options.onSlideAfter || function() {};
 		this.onSlideBefore = this._options.onSlideBefore || function() {};
+		this.onSlideLast = this._options.onSlideLast || function() {};
 		
 		// Storey duration for slides with each slide
 		this._slides = element.children();
@@ -42,6 +43,12 @@ gallery.carousel = null;
 				'still' : thisCar._el.find('.still-slide').index(), 
 				'video' : thisCar._el.find('.video-slide').index(),
 				};	
+		
+		// Calculate delay for title slide
+		this._options.title.delay = thisCar._el.find('.title-slide').text().length*100;
+		
+		// Start off carousel with title slide
+		this._currentSlideIndex = 0;
 	}
 	
 	// Middle align any videos and sketches
@@ -70,23 +77,29 @@ gallery.carousel = null;
 				return;
 
 			var isPreview = gallery.control.isZoomedOut;
+			var isLastSlide = index >= thisCar._slideObjs.length-1;
+			var nextIndex = isLastSlide ? 0 : index + 1;
 
-			// Loop if in preview mode
+			// Tell project we're on the last
+			// slide to cue the nav panels
+			if(isLastSlide)
+				thisCar.onSlideLast();
+
+			// If on first slide, leave the last slide
 			thisCar.goFromSlide(index > 0 ? index-1 : thisCar._slides.length-1);
+			
+			console.log(thisCar._el.parent().attr("id") + ": " + index + " of " + thisCar._slides.length);
 			thisCar.goToSlide(index, function(){
 				// If you've reached the end of the slide, stop cycling
-				// Unles you're in preview mode
-				if(index >= thisCar._slideObjs.length-1) {
-					if(isPreview)
-						index = -1;
-					else {
-						return;
-					}
-				}
-				
-				setTimeout(function(){ cycle(index+1) }, isPreview ? Math.random()*5000 : 0);					
-			});
-		}
+				if(isLastSlide)
+					return;
+				if(!isPreview)
+					cycle(nextIndex) });
+			
+			// Don't wait for callbacks to move onto next slide in Preview mode
+			if(isPreview)
+				setTimeout(function(){ cycle(nextIndex) }, Math.random()*5000);					
+			}
 		cycle(index);
 	}
 	
@@ -97,26 +110,40 @@ gallery.carousel = null;
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey) || 0;
 		$.each(this._slideObjs, function(s, slideObj) {
-			slideObj.slide.stop(true, true);			
+			var slide = slideObj.slide;
+			slide.stop(true, true);
+			thisCar.onSlideBefore(slide, s, s+1);			
 		});
-		thisCar.goToSlide(index);
 	}
 	
 	// Go to a particular slide
+	// If it's a movie, wait for it to finish
 	Carousel.prototype.goToSlide = function(slideKey, callback) {
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey);
 		var slideObj = this._slideObjs[slideKey];
 		var slide = slideObj.slide;
-		slide.animate({opacity : 1 }, slideObj.fadeIn, function(){	
+		var transitionTime;
+		
+		if(slide.hasClass("slide-in")) {
+			slide.css("opacity" , 1).slideUp("fast", function(){
+				$(this).css("display", "block");
+			});
+			transitionTime = 200;
+		}
+		else {
+			slide.animate({opacity : 1 }, slideObj.fadeIn);
+			transitionTime = slideObj.fadeIn;
+		}
+		
+		// Kick off media right away
+		thisCar.onSlideAfter(slide, index, index-1, function(){
+			// Callback after slide fades in and has been held in place (if there is a delay specified)
 			setTimeout(function() {
 				if(callback)
 					callback();
-			}, slideObj.delay);			
+			}, transitionTime + ( slideObj.delay || 0) );	
 		});
-		
-		// Kick off media before the fadeIn completes
-		setTimeout(function() { thisCar.onSlideAfter(slide, index, index-1) }, slideObj.fadeIn*.5);
 	}
 	// Leave a particular slide
 	Carousel.prototype.goFromSlide = function(slideKey, callback) {
@@ -126,11 +153,24 @@ gallery.carousel = null;
 		var index = this._testSlideKey(slideKey);
 		var slideObj = this._slideObjs[slideKey];
 		var slide = slideObj.slide;
-		slide.animate({ opacity : 0 }, slideObj.fadeOut, function(){
+		var onComplete = function(){
 			if(callback)
 				callback();
 			thisCar.onSlideBefore(slide, index, index+1);
-		});
+		}
+		
+		if(slide.hasClass("slide-away")) {
+			slide.slideUp("slow", function() { 
+				onComplete();
+				$(this).css({
+					opacity: 0,
+					display : "block"
+					});
+				});
+		}
+		else {
+			slide.animate({ opacity : 0 }, slideObj.fadeOut, onComplete);
+		}
 	}	
 	
 	//Test slide key

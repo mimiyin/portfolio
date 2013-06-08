@@ -13,11 +13,13 @@
 						<ul class="carousel"> 
 							<li type="title" class="title-slide">
 								<span class="project-title">{{project.title}}</span>
-								<span class="project-description">{{project.description}}</span>
 								<span class="project-collaborators">{{project.collaborators}}</span>
+								<span class="project-description">{{project.description}}</span>
 								<span class="project-materials">{{project.materials}}</span>
+								<span class="project-materials">{{project.music}}</span>
 								</li>
 							{% include template %}
+							<div class="more"></div>
 					</div>
 				{% endwith %}
 			{% endfor %}		
