@@ -4,7 +4,7 @@
 	<script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
 <![endif]-->
 
-	<li type="sketch" class="live">
+	<li type="sketch" class="live player">
 		<canvas id="bach" data-processing-sources="{{STATIC_URL}}sketches/bach.pde" width="1280" height="768">
 		</canvas>
 		</li>
@@ -12,6 +12,6 @@
 
 <script type="text/javascript">
 	var bach = new Audio();
-	bach.setAttribute("src","{{STATIC_URL}}audio/bach.mp3");
+	bach.setAttribute("src","{{STATIC_URL}}audio/bach.mp3");	
 
 </script>

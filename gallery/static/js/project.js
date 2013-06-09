@@ -3,6 +3,8 @@ gallery.project = null;
 
 (function(){
 	var Carousel = gallery.carousel;
+	var SketchPlayer = gallery.sketchPlayer;
+	var VimeoPlayer = gallery.vimeoPlayer;
 	
 	var Project = function Project(project, percHeight) {
 		this.code = project.code;
@@ -15,66 +17,58 @@ gallery.project = null;
 
 		var thisProject = this;		
 
-		// Find videos
-		this._vimeos = {};	
-		$.each(this.div.find($("iframe.vimeo"), function(v, vimeo){
-			var id = $(vimeo).attr('id');
-			thisProject._vimeos[id] = new VimeoPlayer(vimeo);
-		});
+		// Find videos and sketches
+		this._players = {};	
+		// Keep track of sketches for height resizing
+		this._sketches = [];
 		
-		// Find Processing sketches
-		this._sketches = {};
-		$.each(this.div.find($("[type=sketch] canvas")), function(c, canvas){
-			var id = $(canvas).attr('id');
-			thisProject._sketches[id] = new SketchPlayer(Processing.getInstanceById(id));
+		$.each(this.div.find($("li.player")), function(p, player){
+			var type = $(player).attr("type");
+			var id;
+			switch(type) {
+			case "sketch":
+				id = $(player).find("canvas").attr("id");
+				var instance = Processing.getInstanceById(id);
+				thisProject._players[id] = new SketchPlayer(id, instance);
+				thisProject._sketches.push(instance);
+				break;
+			case "vimeo":
+				var vimeo = $(player).find("iframe.vimeo");
+				id = vimeo.attr("id");
+				var vimeoPlayer = $f(vimeo[0]);
+				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);
+				vimeoPlayer.api("getVolume", function(){
+					console.log("WUT");
+				});
+				
+				break;
+			}
 		})
 		
 		// Wire up the carousel
 		this._carousel = new Carousel($(this.div.find("ul.carousel")), {
 		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
-		    	if(slide.hasClass("live"))
-		    		thisProject._playPauseResetLiveContent($(slide), "play", callback);
-		    	else if(callback)
-		    		callback();
+		    	if(slide.hasClass("player")) {
+			    	var id = $(slide.children()[0]).attr("id");
+			    	thisProject._players[id].play(callback || null);
+			    	}
+		    	else
+		    		if(callback) callback();
 		    	},
 		    onSlideBefore: function (slide, oldIndex, newIndex){
-		    	var id = slide.attr("id");
-		    	if(slide.hasClass("vimeo"))
-	    			setTimeout(function(){ thisProject._playPauseResetLiveContent($(slide), "pause"); }, 1000);
-		    },
-	    	onSlideLast: function() {
-	    		setTimeout(function() { thisProject._more.slideDown("slow"); }, 2500);
-	    		},
+		    	if(slide.hasClass("player")) {
+			    	var id = $(slide.children()[0]).attr("id");
+		    		thisProject._players[id].pause();
+		    		}
+		    	},
 		}) || null;
 	};
-	
-	// Callback is for telling carousel that it can advance 
-	// to the next slide once  the media has finished
-	Project.prototype._playPauseResetLiveContent = function(slide, action, callback) {
-		var type = slide.attr("type");
-		var func, player;
-		switch(type) {
-		case "sketch":
-			func = sketchPlayer;
-			func[action](Processing.getInstanceById(this.code));
-			if(callback) callback();
-			break;
-		case "video":
-			func = videoPlayer;
-			if(callback)
-				$f(slide.find('iframe')[0]).addEvent("finish", callback);
-			func[action]($f(slide.find('iframe')[0]), this.code);
-			break;
-		default:
-			return;
-		}
-	},
 	
 	// Make the carousel go from the beginning
 	Project.prototype.start = function() {
 		this._isPlaying = true;
 		if(this._carousel) {
-			this._carousel.play();
+			this._carousel.play(0);
 		}
 	}
 	
@@ -83,12 +77,13 @@ gallery.project = null;
 	Project.prototype.stop = function() {
 		this._isPlaying = false;
 		if(this._carousel) this._carousel.stop();
-		var thisProject = this;
-		$.each(this._live, function(e, el){
-			thisProject._playPauseResetLiveContent($(el), "pause");
+		
+		// Pause all the players
+		$.each(this._players, function(p, player){
+			player.pause();
 		});
 	}
-	
+		
 	// Shift all projects
 	// Start the project if we are going to this project
 	// Only stop project if we are leaving this project
@@ -100,8 +95,13 @@ gallery.project = null;
 		
 	// Zoom out into gallery map view
 	Project.prototype.zoomOut = function(h, isResizing) {
-		if(!isResizing)
+//		if(!isResizing) {
+//			// Turn down all the players
+//			$.each(this._players, function(p, player){
+//				player.turnDown();
+//			});
 			this.start();
+//		}
 		this._more.slideUp("fast");
 		var thisProject = this;
 		this.div.animate({
@@ -124,8 +124,7 @@ gallery.project = null;
 	Project.prototype.resizeSketches = function() {
 		var thisProject = this;
 		// Scale this project's Processing sketches
-		$.each(this._sketches, function(s, sketchObj){
-			var sketch = sketchObj.sketch;
+		$.each(this._sketches, function(s, sketch){
 			var canvas = $(sketch.externals.canvas);
 			var width = canvas.width();
 			var height = canvas.height();
@@ -146,9 +145,6 @@ gallery.project = null;
 		this.resizeSketches();
 		
 		//this.div.shift(0, oldHeight-newHeight, 0, 1);
-		
-
-		
 		this.onResizeHeight();
 		}
 		

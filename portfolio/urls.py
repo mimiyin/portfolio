@@ -7,6 +7,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'gallery.views.index', name='index'),
+    url(r'^froog$', 'gallery.views.froog', name='froog'),
+
     # url(r'^portfolio/', include('portfolio.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

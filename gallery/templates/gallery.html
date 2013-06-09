@@ -1,8 +1,10 @@
 {% load sekizai_tags %}
 {% load jsonify %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/processing.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="http://a.vimeocdn.com/js/froogaloop2.min.js?30718-1370038740"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/froogaloop.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-plus.js"></script>{% endaddtoblock %}
+
+
 
 <div id="gallery">
 	{% for m, medium in media.items %}
@@ -38,6 +40,6 @@
 $(window).load(function(){
 	Processing.logger = console;
 	var media = {{media.items | jsonify }};
-	setTimeout( function(){ gallery.control.init(media); }, 500 );
+	setTimeout( function(){ gallery.control.init(media); }, 500 );	
 });
 </script>

@@ -25,3 +25,7 @@ def index(request):
         medium = sorted(medium, key=lambda x: x['order'], reverse=True)
 
     return render_to_response(template, { 'media' : media }, context_instance=RequestContext(request))
+
+def froog(request):
+    template = 'froog.html'
+    return render_to_response(template, {}, context_instance=RequestContext(request))
