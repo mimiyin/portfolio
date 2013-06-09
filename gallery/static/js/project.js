@@ -13,7 +13,6 @@ gallery.project = null;
 		this._percHeight = percHeight;
 		this.navItem = $("#nav-for-" + this.code);
 		this.div = $("#" + this.code);
-		this._more = this.div.find('.more');
 
 		var thisProject = this;		
 
@@ -36,15 +35,11 @@ gallery.project = null;
 				var vimeo = $(player).find("iframe.vimeo");
 				id = vimeo.attr("id");
 				var vimeoPlayer = $f(vimeo[0]);
-				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);
-				vimeoPlayer.api("getVolume", function(){
-					console.log("WUT");
-				});
-				
+				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);				
 				break;
 			}
 		})
-		
+				
 		// Wire up the carousel
 		this._carousel = new Carousel($(this.div.find("ul.carousel")), {
 		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
@@ -68,45 +63,55 @@ gallery.project = null;
 	Project.prototype.start = function() {
 		this._isPlaying = true;
 		if(this._carousel) {
-			this._carousel.play(0);
+			this._carousel.start();
 		}
 	}
 	
 	// Stop the carousel
 	// Stop all live elements
 	Project.prototype.stop = function() {
+		//console.log("STOPPING: " + this.code);
 		this._isPlaying = false;
 		if(this._carousel) this._carousel.stop();
-		
+				
 		// Pause all the players
 		$.each(this._players, function(p, player){
 			player.pause();
 		});
 	}
+	
+	
 		
 	// Shift all projects
 	// Start the project if we are going to this project
 	// Only stop project if we are leaving this project
-	Project.prototype.shift = function(leftShift, topShift, isZoomedIn) {
-		var callback = isZoomedIn ? function() { thisProject.start(); } : (this._isPlaying ? function() { thisProject.stop(); } : null);		
+	Project.prototype.shift = function(leftShift, topShift, isPlaying) {
 		var thisProject = this;
-		this.div.shift(leftShift, topShift, 100, 100, isZoomedIn ? 3000 : 2500, callback );
+		var callback;
+		
+		if(isPlaying)
+			//I have to stop it first, otherwise, there will be interfering
+			//timed callbacks interfering with playing
+			callback = function() { thisProject.stop(); thisProject.start(); };
+		else if(this._isPlaying)
+			callback = function() { thisProject.stop(); };	
+
+		this.div.shift(leftShift, topShift, 100, 100, isPlaying ? 3000 : 2500, callback);
+		
+	}
+	
+	// Re-adjust top offset based on absolute positioning
+	// Which is needed to make the "shift" feature work
+	Project.prototype.zoomIn = function(row) {
+		this.div.css("top", row*100 + "%");
 	}
 		
 	// Zoom out into gallery map view
 	Project.prototype.zoomOut = function(h, isResizing) {
-		if(!isResizing) {
-			// Turn down all the players
-			$.each(this._players, function(p, player){
-				player.turnDown();
-			});
+		if(!isResizing)
 			this.start();
-		}
-		this._more.slideUp("fast");
 		var thisProject = this;
 		this.div.animate({
-			top : 0,
-			left : 0,
 			height : h + "px",
 			overflow : 'hidden',
 		}, "slow", function() {

@@ -7,6 +7,7 @@ ArrayList squares = new ArrayList();
 
 int toss, t, m;
 float bg, bgspeed;
+float rFactor, gFactor, bFactor;
 
 float scaleX = 1;
 float scaleY = 1;
@@ -25,7 +26,7 @@ void setup() {
   fadeout = false;
   o_curtain = 0;
   
-  bg = 0;
+  bg = random()*255;  	
   bgspeed = 0.1;
   
   noLoop();
@@ -34,10 +35,12 @@ void setup() {
 
 void draw() {
   scale(scaleX, scaleY);
+  
   background(bg, 255-bg, bg/2);
   bg+=bgspeed;
   if(bg<0 || bg>255) bgspeed*=-1;
   bg=constrain(bg, 0, 255);
+  
   //Create squares (at a slow rate)
   initialize();
 
@@ -78,12 +81,10 @@ void initialize() {                                              // create new s
     springs.add(new Spring((noise(t+random(10))*width*-1), (noise(t+random(100))*noise(t)*random(0.01))));
     squares.add(new Square((noise(t+random(100))*100)));
     t += random (-1, 5);
-  if(bach.paused) {                         // as soon as first spring/square is created, play music                 
+  if(bach.paused) {                         					// as soon as first spring/square is created, play music                 
     bach.play();
+  	}
   }
-
-  }
-
 }
 
 void curtain() {                                               // if music is playing, count seconds until...

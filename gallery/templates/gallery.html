@@ -13,7 +13,7 @@
 				{% with project.code|add:".html" as template %}
 					<div id="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
 						<ul class="carousel"> 
-							<li type="title" class="title-slide">
+							<li type="title" class="title-slide" alt="Intro">
 								<span class="project-title">{{project.title}}</span>
 								<span class="project-collaborators">{{project.collaborators}}</span>
 								<span class="project-description">{{project.description}}</span>
@@ -21,7 +21,6 @@
 								<span class="project-materials">{{project.music}}</span>
 								</li>
 							{% include template %}
-							<div class="more"></div>
 					</div>
 				{% endwith %}
 			{% endfor %}		

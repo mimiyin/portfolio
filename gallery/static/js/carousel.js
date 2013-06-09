@@ -48,14 +48,51 @@ gallery.carousel = null;
 		this._options.title.delay = thisCar._el.find('.title-slide').text().length*100;
 		
 		// Start off carousel with title slide
-		this._currentSlideIndex = 0;
+		this._lastSlideIndex = this._slides.length-1;
+		this._currentSlideIndex = this._lastSlideIndex;
+		this._nextSlideIndex = 0;	
+		
+		// Build the nav
+		this._buildNav();
+		
+		// Listen to mousemoves to show nav
+		this._nav.parent().mouseenter(function(){
+				thisCar._showNav();
+		});
+		this._nav.parent().mouseleave(function(){
+				thisCar._hideNav();
+		});
+
 	}
 	
-	Carousel._buildNav = function() {
-		var this._nav = $("<ul>").addClass("carousel-nav").appendTo(this._el);
+	// Show nav for 5 seconds after moving mouse
+	Carousel.prototype._showNav = function(isAutoHide) {
+		if(gallery.control.isZoomedOut)
+			return;
+		this._nav.stop(true, true);
+		var thisCar = this;
+		this._nav.slideDown("slow", function(){
+			$(this).css("display", "block");
+			if(isAutoHide)
+				thisCar._hideNav();
+		})
+	}
+	
+	// Hide nav
+	Carousel.prototype._hideNav = function() {
+		this._nav.delay(5000).slideUp("slow", function(){
+			$(this).css("display", "none");
+		});
+	}
+	
+	Carousel.prototype._buildNav = function() {
+		var thisCar = this;
+		this._nav = $("<ul>").addClass("carousel-nav").appendTo($("<div>").addClass("nav-wrapper").appendTo(thisCar._el));
 		$.each(this._slides, function(s, slide){
-			var label = slide.attr("alt");
+			var label = $(slide).attr("alt");
 			thisCar._nav.append($("<li>").addClass("carousel-nav-item").text(label).click(function(){
+				console.log("CLICKING ON: " + $(this).index());
+				thisCar.stop();
 				thisCar.goFromSlide(thisCar._currentSlideIndex);
 				thisCar.goToSlide($(this).index());
 			}));
@@ -76,47 +113,68 @@ gallery.carousel = null;
 	}
 	
 	// Cycle through all the slides
-	Carousel.prototype.play = function(slideKey) {
-		this._isPaused = false;
+	Carousel.prototype._cycle = function() {
+		if(this._isPaused)
+			return;
 		
+		// Leave the current slide
+		this.goFromSlide(this._currentSlideIndex);
+
 		var thisCar = this;
-		var index = this._testSlideKey(slideKey) || 0;
-		function cycle(index) {
-			if(thisCar._isPaused)
+		var isPreview = gallery.control.isZoomedOut == true ? true : false;
+		var isLastSlide = function() { 
+			return thisCar._nextSlideIndex == thisCar._lastSlideIndex;
+		}
+
+		// Go to next slide
+		this.goToSlide(this._nextSlideIndex, function(){
+			// If we're in Preview mode or the Carousel is paused, stop cycling
+			// I need to listen for isPaused because this callback may not
+			// get called for a while, during which time everything has changed
+			if(isPreview || thisCar._isPaused)
 				return;
-
-			var isPreview = gallery.control.isZoomedOut == true ? true : false;
-			var isLastSlide = index >= thisCar._slideObjs.length-1;
-			var nextIndex = isLastSlide ? 0 : index + 1;
-
-			// If on first slide, leave the last slide
-			thisCar.goFromSlide(index > 0 ? index-1 : thisCar._slides.length-1);
+			// If you've reached the end of the slide, stop cycling
+			if(isLastSlide())
+				return;
 			
-			thisCar.goToSlide(index, function(){
-				// If you've reached the end of the slide, stop cycling
-				if(isLastSlide)
-					return;
-				if(!isPreview)
-					cycle(nextIndex) });
-			
-			// Don't wait for callbacks to move onto next slide in Preview mode
-			if(isPreview)
-				thisCar._nextTimeOut = setTimeout(function(){ cycle(nextIndex) }, Math.random()*10000 + 2500);					
-			}
-		cycle(index);
+			thisCar._nextSlideIndex++;
+			thisCar._cycle();
+				
+			});
+		
+		// Don't wait for callbacks to move onto next slide in Preview mode
+		if(isPreview)
+			this._nextTimeOut = setTimeout(function(){ 
+				thisCar._nextSlideIndex = isLastSlide() ? 0 : thisCar._nextSlideIndex + 1;
+				thisCar._cycle();
+				}, Math.random()*10000 + 5000);					
+		
 	}
 	
-	// Stop all animation.
-	// Optional slideKey to stop on
-	Carousel.prototype.stop = function(slideKey) {
+	// Start up the carousel
+	Carousel.prototype.start = function(slideKey) {
+		this._isPaused = false;
+		this._nextSlideIndex = this._testSlideKey(slideKey) || 0;		
+		this._cycle();
+		
+		var thisCar = this;
+		// Show nav after 2.5 seconds
+		setTimeout(function(){
+			thisCar._showNav(true);
+		}, 2500);
+	}
+		
+	// Stop cycling animations.
+	// Clear all impending timed cycling
+	Carousel.prototype.stop = function() {
 		this._isPaused = true;
 		var thisCar = this;
-		var index = this._testSlideKey(slideKey) || 0;
 		$.each(this._slideObjs, function(s, slideObj) {
 			var slide = slideObj.slide;
+			// Do not complete animations
 			slide.stop(true, true);
 		});
-		
+				
 		// Get rid of any upcoming preview timeouts
 		clearTimeout(this._nextTimeOut);
 		delete this._nextTimeOut;
@@ -125,7 +183,6 @@ gallery.carousel = null;
 	// Go to a particular slide
 	// If it's a movie, wait for it to finish
 	Carousel.prototype.goToSlide = function(slideKey, callback) {
-
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey);
 		var slideObj = this._slideObjs[slideKey];
@@ -134,7 +191,7 @@ gallery.carousel = null;
 		var transitionTime;
 		
 		if(slide.hasClass("slide-in")) {
-			slide.css("opacity" , 1).slideUp("fast", function(){
+			slide.css("opacity" , 1).slideUp("medium", function(){
 				$(this).css("display", "block");
 			});
 			transitionTime = 200;
@@ -146,7 +203,9 @@ gallery.carousel = null;
 			
 		// Kick off media right away
 		thisCar.onSlideAfter(slide, index, index-1, function(){
-			// Callback to move onto next slide fades in and has been held in place (if there is a delay specified)
+			// Callback to move onto next slide fades in and 
+			// has been held in place (if there is a delay specified)
+			// If the player is paused, this callback gets nuked
 			setTimeout(function() {
 				if(callback)
 					callback();
