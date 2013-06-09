@@ -78,11 +78,12 @@ void initialize() {                                              // create new s
     springs.add(new Spring((noise(t+random(10))*width*-1), (noise(t+random(100))*noise(t)*random(0.01))));
     squares.add(new Square((noise(t+random(100))*100)));
     t += random (-1, 5);
-  }
-
-  if(toss%33 == 0 && bach.paused) {                         // as soon as first spring/square is created, play music                 
+  if(bach.paused) {                         // as soon as first spring/square is created, play music                 
     bach.play();
   }
+
+  }
+
 }
 
 void curtain() {                                               // if music is playing, count seconds until...
@@ -92,7 +93,7 @@ void curtain() {                                               // if music is pl
     fadeout = true;
   }
 
-  if (fadeout == true) {
+  if (fadeout) {
     
     fill(255-bg, bg, bg*2, o_curtain);
     rectMode(CORNER);
@@ -100,9 +101,6 @@ void curtain() {                                               // if music is pl
     o_curtain += 0.1;
     o_curtain = constrain(o_curtain, 0, 255);
   }
-  
-  if(bach.paused)
-  	reset();
 }
 
 void resize(float _scaleX, float _scaleY) {

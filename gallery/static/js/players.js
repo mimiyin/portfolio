@@ -22,14 +22,10 @@ gallery.sketchPlayer = null;
 			this._hasAudio = false;
 			console.log(this.id + " has no audio."); 
 			} ;
-			
-			
-		this.isPaused = true;
-		
+						
 		// Pause it right out of the gate
 		this.sketch.noLoop();
 		if(this._hasAudio) {
-			this._audio.pause();
 			this._mute();
 		}
 				
@@ -62,7 +58,6 @@ gallery.sketchPlayer = null;
 	
 	SketchPlayer.prototype._mute = function() {
 		this._audio.volume = 0;
-		this._audio.pause();
 	}
 	
 	SketchPlayer.prototype.turnDown = function(callback) { 
@@ -81,7 +76,6 @@ gallery.sketchPlayer = null;
 			else {
 				if(callback)
 					callback();
-				thisSP._audio.pause();
 				}
 			}
 		turnDown();

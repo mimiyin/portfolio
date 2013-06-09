@@ -1,25 +1,8 @@
-<li type="vimeo" class="live player slide-away">
+<li type="vimeo" class="live player slide-away" alt="Study with Moving Light and Still Figure">
 <iframe id="jig-craig" src="http://player.vimeo.com/video/30669296?api=1;&loop=1&player_id=jig-craig" class="media vimeo" width="800" height="450" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></li>			
 
-<script type="text/javascript" src="{{STATIC_URL}}js/lib/froogaloop.js"></script>
-<script type=text/javascript>
-console.log("HELLO");
-	$(window).load(function(){
-				var vimeo = $("#jig-craig")[0];
-				var vimeoPlayer = $f(vimeo);
-				vimeoPlayer.addEvent('ready', ready);
-				console.log("HELLO?")
-				console.log(vimeoPlayer);
-				function ready(player_id){
-					froogaloop = $f(player_id),
-					froogaloop.api("getVolume", function(value, id){
-						console.log("WUT");
-						console.log(value);
-						});
-					}
-				});
-</script>
-<!-- <li type="vimeo" class="live player slide-in">
+
+<li type="vimeo" class="live player slide-in" alt="Light #1">
 <iframe id="jig-flail" src="http://player.vimeo.com/video/30670001?api=1;&loop=1" class="media vimeo" width="800" height="450" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></li>			
- -->
+
 </ul>

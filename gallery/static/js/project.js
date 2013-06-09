@@ -95,13 +95,13 @@ gallery.project = null;
 		
 	// Zoom out into gallery map view
 	Project.prototype.zoomOut = function(h, isResizing) {
-//		if(!isResizing) {
-//			// Turn down all the players
-//			$.each(this._players, function(p, player){
-//				player.turnDown();
-//			});
+		if(!isResizing) {
+			// Turn down all the players
+			$.each(this._players, function(p, player){
+				player.turnDown();
+			});
 			this.start();
-//		}
+		}
 		this._more.slideUp("fast");
 		var thisProject = this;
 		this.div.animate({

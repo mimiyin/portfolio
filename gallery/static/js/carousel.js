@@ -51,6 +51,17 @@ gallery.carousel = null;
 		this._currentSlideIndex = 0;
 	}
 	
+	Carousel._buildNav = function() {
+		var this._nav = $("<ul>").addClass("carousel-nav").appendTo(this._el);
+		$.each(this._slides, function(s, slide){
+			var label = slide.attr("alt");
+			thisCar._nav.append($("<li>").addClass("carousel-nav-item").text(label).click(function(){
+				thisCar.goFromSlide(thisCar._currentSlideIndex);
+				thisCar.goToSlide($(this).index());
+			}));
+		});
+	}
+	
 	// Middle align any videos and sketches
 	Carousel.prototype.middleAlignMedia = function() {
 		$.each(this._slides, function(s, slide){
@@ -122,16 +133,16 @@ gallery.carousel = null;
 		var slide = slideObj.slide;
 		var transitionTime;
 		
-//		if(slide.hasClass("slide-in")) {
-//			slide.css("opacity" , 1).slideUp("fast", function(){
-//				$(this).css("display", "block");
-//			});
-//			transitionTime = 200;
-//		}
-//		else {
+		if(slide.hasClass("slide-in")) {
+			slide.css("opacity" , 1).slideUp("fast", function(){
+				$(this).css("display", "block");
+			});
+			transitionTime = 200;
+		}
+		else {
 			slide.animate({ opacity : 1 }, slideObj.fadeIn);
 			transitionTime = slideObj.fadeIn;
-		//}
+		}
 			
 		// Kick off media right away
 		thisCar.onSlideAfter(slide, index, index-1, function(){
@@ -157,18 +168,18 @@ gallery.carousel = null;
 			thisCar.onSlideBefore(slide, index, index+1);
 		}
 		
-//		if(slide.hasClass("slide-away")) {
-//			slide.slideUp("slow", function() { 
-//				onComplete();
-//				$(this).css({
-//					opacity: 0,
-//					display : "block"
-//					});
-//				});
-//		}
-//		else {
+		if(slide.hasClass("slide-away")) {
+			slide.slideUp("slow", function() { 
+				onComplete();
+				$(this).css({
+					opacity: 0,
+					display : "block"
+					});
+				});
+		}
+		else {
 			slide.animate({ opacity : 0 }, slideObj.fadeOut, onComplete);
-//		}
+		}
 	}	
 	
 	//Test slide key

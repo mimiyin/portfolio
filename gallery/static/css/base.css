@@ -119,7 +119,7 @@ li {
 	font-size: 5em;
 }
 
-#gallery ul.carousel li embed, #gallery ul.carousel li .media {
+#gallery ul.carousel li embed, #gallery ul.carousel li .media, #gallery ul.carousel li canvas {
 	width: 100%;
 	height: inherit;
 }
