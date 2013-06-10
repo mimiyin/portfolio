@@ -28,17 +28,32 @@ void setup() {
   bg = random()*255;  	
   bgspeed = 0.1;
   
+rFactor = random()*1;
+rFactorSpeed = 0.001;
+gFactor = random()*255;
+gFactorSpeed = 0.001;
+bFactor = random()*2;
+bFactorSpeed = 0.001;
+  
+  
   noLoop();
   bach.volume = 0;
 }
 
 void draw() {
   scale(scaleX, scaleY);
-  
-  background(bg, 255-bg, bg/2);
+  rFactor += rFactorSpeed;
+  if(rFactor < 0 || rFactor > 1) rFactorSpeed *= -1;  
+  gFactor += gFactorSpeed;
+  if(gFactor < 0 || gFactor > 255) gFactorSpeed *= -1;
+  bFactor += bFactorSpeed
+  if(bFactor < 1 || bFactor > 3) bFactorSpeed *= -1;
+  	  
   bg+=bgspeed;
   if(bg<0 || bg>255) bgspeed*=-1;
   bg=constrain(bg, 0, 255);
+
+  background(bg*rFactor, gFactor-bg, bg/bFactor);
   
   //Create squares (at a slow rate)
   initialize();
@@ -86,7 +101,7 @@ void initialize() {                                              // create new s
 
 void curtain() {                                               // if music is playing, count seconds until...
 
-	fill(255-bg, bg, bg*2, o_curtain);
+	fill(gFactor-bg, bg/bFactor, bg*rFactor, o_curtain);
 	rectMode(CORNER);
 	rect(0, 0, width, height);  
 	o_curtain += curtainSpeed;
@@ -100,11 +115,8 @@ void resize(float _scaleX, float _scaleY) {
 }
 
 void reset() {
-  println("CURRENT TIME : " + bach.currentTime);
-  springs.clear();
-  squares.clear();
+	console.log(bach.currentTime);
 }
-
 
 class Spring {
   PVector anchor;
@@ -206,7 +218,7 @@ class Square {
 
     rectMode(CENTER);
     noStroke();
-    fill(255-bg, bg, bg*2, o_square);
+    fill(gFactor-bg, bg*rFactor, bg*bFactor, o_square);
 
     rect(0, 0, w_square, h_square);
 

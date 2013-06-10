@@ -11,6 +11,7 @@ gallery.sketchPlayer = null;
 		try { 
 			this._audio = this.sketch.getAudio(); 
 			this._audio.addEventListener('ended', function(){
+				console.log("ENDED!");
 				thisSP._audio.currentTime = 0;
 				thisSP.sketch.reset();
 			})
