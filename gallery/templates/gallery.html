@@ -28,6 +28,24 @@
 	{% endfor %}
 </div>
 
+
+<script type="text/javascript">
+var vimeos = {};
+$(document).ready(function(){
+	Processing.logger = console;
+	var media = {{media.items | jsonify }};
+	// Catching the ready event early enough
+	var vimeoIframes = $("#gallery").find("li[type=vimeo] iframe");
+	$.each(vimeoIframes, function(v, vimeo){
+		$(vimeo).load(function(){
+			$f(vimeo).addEvent("ready", function(player_id){
+				vimeos[player_id] = $f(player_id);
+				})
+			});
+		});
+	setTimeout(function(){ gallery.control.init(media); }, 500);	
+});
+</script>
 {% include "nav.html" %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/utils.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/players.js"></script>{% endaddtoblock %}
@@ -35,10 +53,3 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/project.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/control.js"></script>{% endaddtoblock %}
 
-<script type="text/javascript">
-$(window).load(function(){
-	Processing.logger = console;
-	var media = {{media.items | jsonify }};
-	setTimeout( function(){ gallery.control.init(media); }, 500 );	
-});
-</script>

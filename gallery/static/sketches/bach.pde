@@ -1,6 +1,5 @@
 
-boolean fadeout;
-float o_curtain;
+float o_curtain, curtainSpeed;
 
 ArrayList springs = new ArrayList();
 ArrayList squares = new ArrayList();
@@ -23,9 +22,9 @@ void setup() {
   t = 0;
 
   m = 0;
-  fadeout = false;
   o_curtain = 0;
-  
+  curtainSpeed = 0.1;
+	  
   bg = random()*255;  	
   bgspeed = 0.1;
   
@@ -79,29 +78,20 @@ void initialize() {                                              // create new s
   toss = int(random(1000));
   if(toss%33 == 0) {
     springs.add(new Spring((noise(t+random(10))*width*-1), (noise(t+random(100))*noise(t)*random(0.01))));
-    squares.add(new Square((noise(t+random(100))*100)));
+    squares.add(new Square((noise(t+random(100))*250)));
     t += random (-1, 5);
-  if(bach.paused) {                         					// as soon as first spring/square is created, play music                 
-    bach.play();
-  	}
+    bach.play();         										// as soon as first spring/square is created, play music                 
   }
 }
 
 void curtain() {                                               // if music is playing, count seconds until...
-  
-  // Base this off location of music
-  if (bach.currentTime > bach.duration*.8) {                                             // it's time to pull the curtain
-    fadeout = true;
-  }
 
-  if (fadeout) {
-    
-    fill(255-bg, bg, bg*2, o_curtain);
-    rectMode(CORNER);
-    rect(0, 0, width, height);  
-    o_curtain += 0.1;
-    o_curtain = constrain(o_curtain, 0, 255);
-  }
+	fill(255-bg, bg, bg*2, o_curtain);
+	rectMode(CORNER);
+	rect(0, 0, width, height);  
+	o_curtain += curtainSpeed;
+	if(o_curtain < 0 || o_curtain > 255) curtainSpeed *= -1;
+	o_curtain = constrain(o_curtain, 0, 255);
 }
 
 void resize(float _scaleX, float _scaleY) {
@@ -110,6 +100,7 @@ void resize(float _scaleX, float _scaleY) {
 }
 
 void reset() {
+  println("CURRENT TIME : " + bach.currentTime);
   springs.clear();
   squares.clear();
 }

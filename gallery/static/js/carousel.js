@@ -15,8 +15,9 @@ gallery.carousel = null;
 		this._id = $(element).parent().attr("id");
 		
 		// Seeding slide nav events
-		this.onSlideAfter = this._options.onSlideAfter || function() {};
-		this.onSlideBefore = this._options.onSlideBefore || function() {};
+		this.onSlideStop = this._options.onSlideStop || null;
+		this.onSlideAfter = this._options.onSlideAfter || null;;
+		this.onSlideBefore = this._options.onSlideBefore || null;
 		
 		// Storey duration for slides with each slide
 		this._slides = element.children();
@@ -91,10 +92,9 @@ gallery.carousel = null;
 		$.each(this._slides, function(s, slide){
 			var label = $(slide).attr("alt");
 			thisCar._nav.append($("<li>").addClass("carousel-nav-item").text(label).click(function(){
-				console.log("CLICKING ON: " + $(this).index());
+				console.log("CLICKING ON: " + $(this).text());
 				thisCar.stop();
-				thisCar.goFromSlide(thisCar._currentSlideIndex);
-				thisCar.goToSlide($(this).index());
+				thisCar.start($(this).index());
 			}));
 		});
 	}
@@ -117,8 +117,10 @@ gallery.carousel = null;
 		if(this._isPaused)
 			return;
 		
-		// Leave the current slide
-		this.goFromSlide(this._currentSlideIndex);
+		// Leave the current slide if it is not
+		// also the slide we're trying to go to
+		if(this._currentSlideIndex != this._nextSlideIndex)
+			this.goFromSlide(this._currentSlideIndex);
 
 		var thisCar = this;
 		var isPreview = gallery.control.isZoomedOut == true ? true : false;
@@ -136,7 +138,6 @@ gallery.carousel = null;
 			// If you've reached the end of the slide, stop cycling
 			if(isLastSlide())
 				return;
-			
 			thisCar._nextSlideIndex++;
 			thisCar._cycle();
 				
@@ -173,6 +174,7 @@ gallery.carousel = null;
 			var slide = slideObj.slide;
 			// Do not complete animations
 			slide.stop(true, true);
+			thisCar.onSlideStop(slide);
 		});
 				
 		// Get rid of any upcoming preview timeouts
@@ -186,7 +188,6 @@ gallery.carousel = null;
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey);
 		var slideObj = this._slideObjs[slideKey];
-		this._currentSlideIndex = index;
 		var slide = slideObj.slide;
 		var transitionTime;
 		
@@ -212,7 +213,10 @@ gallery.carousel = null;
 			}, transitionTime + ( slideObj.delay || 0) );	
 		});
 		
+		//Update current slide
+		this._currentSlideIndex = index;	
 	}
+	
 	// Leave a particular slide
 	Carousel.prototype.goFromSlide = function(slideKey, callback) {
 		if(slideKey < 0)

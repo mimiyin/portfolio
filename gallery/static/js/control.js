@@ -2,6 +2,8 @@ var gallery = gallery || {};
 gallery.control = null;
 
 (function (){
+	
+	
 	var utils = gallery.utils;
 	var control = {
 		isZoomedOut : false,
@@ -105,7 +107,7 @@ gallery.control = null;
 				var mediumEl = $(med);
 				var scale = "scale(" + scaleX + "," + scaleX + ")";
 				var translateX = -150 + m*400;
-				var transform = scale + " translate(" + translateX + "%, -150%)";
+				var transform = scale + " translate(" + translateX + "%, -100%)";
 				mediumEl
 					.switchClass("view", "preview", 1000)
 					.css({
