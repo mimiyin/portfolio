@@ -30,7 +30,7 @@ gallery.sketchPlayer = null;
 				
 	}
 	SketchPlayer.prototype.pause = function() {
-		//console.log("PAUSING!!! " + this.id);
+		console.log("PAUSING!!! " + this.id);
 		// Cancel out any callbacks
 		this._callback = null;
 		var thisSP = this;
@@ -105,12 +105,16 @@ gallery.vimeoPlayer = null;
 	var VimeoPlayer = function VimeoPlayer(id, video) {
 		this.id = id;
 		this.type = "vimeo";
-		this._video = video;	
+		this._video = video;
 		this._mute();			
 	}
 	
 	VimeoPlayer.prototype.finish = function() {
 		this._callback();
+	}
+	
+	VimeoPlayer.prototype.reset = function() {
+		this._video.api()
 	}
 	
 	VimeoPlayer.prototype.pause = function() {
@@ -123,7 +127,8 @@ gallery.vimeoPlayer = null;
 		});
 	}
 	VimeoPlayer.prototype.play = function(callback) { 
-		//console.log("PLAYING!!! " + this.id);		
+		console.log("PLAYING!!! " + this.id);
+		console.log("IS ZOOMEDOUT: " + gallery.control.isZoomedOut);
 		this._video.api("play");
 		if(!gallery.control.isZoomedOut) {
 			this._turnUp();

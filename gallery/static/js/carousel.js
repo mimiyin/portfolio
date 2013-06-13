@@ -154,15 +154,15 @@ gallery.carousel = null;
 	
 	// Start up the carousel
 	Carousel.prototype.start = function(slideKey) {
-		this._isPaused = false;
-		this._nextSlideIndex = this._testSlideKey(slideKey) || 0;		
-		this._cycle();
-		
-		var thisCar = this;
-		// Show nav after 2.5 seconds
-		setTimeout(function(){
-			thisCar._showNav(true);
-		}, 2500);
+//		this._isPaused = false;
+//		this._nextSlideIndex = this._testSlideKey(slideKey) || 0;		
+//		this._cycle();
+//		
+//		var thisCar = this;
+//		// Show nav after 2.5 seconds
+//		setTimeout(function(){
+//			thisCar._showNav(true);
+//		}, 2500);
 	}
 		
 	// Stop cycling animations.

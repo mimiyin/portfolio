@@ -4,7 +4,7 @@ html, body, div, span, p, img {
 	margin: 0;
 	padding: 0;
 	vertical-align: baseline;	
-	font-family: "Lucida", "Myriad", "Calibri", sans-serif;
+	font-family: "Myriad Pro", "Calibri", "Lucida", sans-serif;
 	color: #999;
 }
 
@@ -115,10 +115,6 @@ li {
 	opacity: 1;
 }
 
-#gallery ul.carousel li.title-slide {
-	font-size: 5em;
-}
-
 #gallery ul.carousel li embed, #gallery ul.carousel li .media, #gallery ul.carousel li canvas {
 	width: 100%;
 	height: inherit;
@@ -127,7 +123,24 @@ li {
 #gallery ul.carousel li .media {
 	position: absolute;
 	top: 50%;
-}	
+}
+
+
+/* TITLE SLIDE */	
+
+li.title-slide span {
+	font-size: 5em;
+	color: rgba(0,0,0,.07);
+}
+
+span.project-title {
+	color: rgba(0,0,0,.33) !important;
+}
+span.project-tagline {
+	color: rgba(0,0,0,.33) !important;
+}
+
+
 
 /* CAROUSEL NAV */
 

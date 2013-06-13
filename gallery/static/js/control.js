@@ -6,7 +6,7 @@ gallery.control = null;
 	
 	var utils = gallery.utils;
 	var control = {
-		isZoomedOut : false,
+		isZoomedOut : true,
 		_currentMediumInd : 0,
 		_currentProjectInd : 0,
 		_currentProject : null,

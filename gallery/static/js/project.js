@@ -34,8 +34,7 @@ gallery.project = null;
 			case "vimeo":
 				var vimeo = $(player).find("iframe.vimeo");
 				id = vimeo.attr("id");
-				console.log(id);
-				var vimeoPlayer = $f(vimeo[0]);
+				var vimeoPlayer = vimeos[id];
 				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);				
 				break;
 			}
@@ -49,7 +48,8 @@ gallery.project = null;
 			    	}				
 			},
 		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
-		    	if(slide.hasClass("player")) {
+		    	// Only play featured movies if we're zoomed out
+		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || slide.hasClass(".featured"))) {		    	
 			    	var id = $(slide.children()[0]).attr("id");
 			    	thisProject._players[id].play(callback || null);
 			    	}
@@ -79,11 +79,6 @@ gallery.project = null;
 		//console.log("STOPPING: " + this.code);
 		this._isPlaying = false;
 		if(this._carousel) this._carousel.stop();
-				
-		// Pause all the players
-//		$.each(this._players, function(p, player){
-//			player.pause();
-//		});
 	}
 	
 	

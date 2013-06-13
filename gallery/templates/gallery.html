@@ -14,11 +14,13 @@
 					<div id="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
 						<ul class="carousel"> 
 							<li type="title" class="title-slide" alt="Intro">
-								<span class="project-title">{{project.title}}</span>
-								<span class="project-collaborators">{{project.collaborators}}</span>
+								<span class="project-title">{{project.title}}. </span>
+								<span class="project-tagline">{{project.tagline}}</span>
+								<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
+								<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
 								<span class="project-description">{{project.description}}</span>
 								<span class="project-materials">{{project.materials}}</span>
-								<span class="project-materials">{{project.music}}</span>
+								<span class="project-music">{{project.music}}</span>
 								</li>
 							{% include template %}
 					</div>
@@ -31,19 +33,20 @@
 
 <script type="text/javascript">
 var vimeos = {};
+var vimeoCount = 0;
 $(document).ready(function(){
 	Processing.logger = console;
 	var media = {{media.items | jsonify }};
 	// Catching the ready event early enough
 	var vimeoIframes = $("#gallery").find("li[type=vimeo] iframe");
 	$.each(vimeoIframes, function(v, vimeo){
-		$(vimeo).load(function(){
-			$f(vimeo).addEvent("ready", function(player_id){
-				vimeos[player_id] = $f(player_id);
-				})
+		$f(vimeo).addEvent("ready", function(player_id){
+			vimeoCount++;
+			vimeos[player_id] = $f(player_id);
+ 			if(vimeoCount == vimeoIframes.length)
+				setTimeout(function(){ gallery.control.init(media); }, 1000);
 			});
-		});
-	setTimeout(function(){ gallery.control.init(media); }, 500);	
+	});
 });
 </script>
 {% include "nav.html" %}
