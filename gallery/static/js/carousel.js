@@ -129,7 +129,7 @@ gallery.carousel = null;
 		}
 
 		// Go to next slide
-		this.goToSlide(this._nextSlideIndex, function(){
+		this.goToSlide(this._nextSlideIndex, isPreview, isLastSlide(), function(){
 			// If we're in Preview mode or the Carousel is paused, stop cycling
 			// I need to listen for isPaused because this callback may not
 			// get called for a while, during which time everything has changed
@@ -141,28 +141,21 @@ gallery.carousel = null;
 			thisCar._nextSlideIndex++;
 			thisCar._cycle();
 				
-			});
-		
-		// Don't wait for callbacks to move onto next slide in Preview mode
-		if(isPreview)
-			this._nextTimeOut = setTimeout(function(){ 
-				thisCar._nextSlideIndex = isLastSlide() ? 0 : thisCar._nextSlideIndex + 1;
-				thisCar._cycle();
-				}, Math.random()*10000 + 5000);					
+			});				
 		
 	}
 	
 	// Start up the carousel
 	Carousel.prototype.start = function(slideKey) {
-//		this._isPaused = false;
-//		this._nextSlideIndex = this._testSlideKey(slideKey) || 0;		
-//		this._cycle();
-//		
-//		var thisCar = this;
-//		// Show nav after 2.5 seconds
-//		setTimeout(function(){
-//			thisCar._showNav(true);
-//		}, 2500);
+		this._isPaused = false;
+		this._nextSlideIndex = this._testSlideKey(slideKey) || 0;		
+		this._cycle();
+		
+		var thisCar = this;
+		// Show nav after 2.5 seconds
+		setTimeout(function(){
+			thisCar._showNav(true);
+		}, 2500);
 	}
 		
 	// Stop cycling animations.
@@ -184,7 +177,7 @@ gallery.carousel = null;
 	
 	// Go to a particular slide
 	// If it's a movie, wait for it to finish
-	Carousel.prototype.goToSlide = function(slideKey, callback) {
+	Carousel.prototype.goToSlide = function(slideKey, isPreview, isLastSlide, callback) {
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey);
 		var slideObj = this._slideObjs[slideKey];
@@ -214,7 +207,16 @@ gallery.carousel = null;
 		});
 		
 		//Update current slide
-		this._currentSlideIndex = index;	
+		this._currentSlideIndex = index;
+		
+		// Don't wait for callbacks to move onto next slide in Preview mode
+		if(isPreview) {
+			var delayFactor = slide.hasClass("featured") ? 5000 : 1000;
+			this._nextTimeOut = setTimeout(function(){ 
+				thisCar._nextSlideIndex = isLastSlide? 0 : thisCar._nextSlideIndex + 1;
+				thisCar._cycle();
+				}, Math.random()*10000 + delayFactor);	
+		}
 	}
 	
 	// Leave a particular slide

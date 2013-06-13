@@ -126,6 +126,10 @@ li {
 	top: 50%;
 }
 
+#gallery ul.carousel li img {
+	width: 100%;
+}
+
 
 /* TITLE SLIDE */	
 
