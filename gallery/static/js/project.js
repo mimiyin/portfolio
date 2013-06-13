@@ -113,14 +113,16 @@ gallery.project = null;
 			this.start();
 		var thisProject = this;
 		this.div.animate({
+			opacity : .1,
 			top : 0,
 			left : 0,
 			height : h + "px",
 			overflow : 'hidden',
-		}, "slow", function() {
+		}, Math.random()*5000 + 2500, function() {
+			$(this).fadeTo(Math.random()*10000 + 2500, 1);
 			thisProject.resizeSketches();
 			thisProject.onResizeHeight();
-			});
+			})
 	}
 	
 	// Middle aligning media items (videos, sketches)

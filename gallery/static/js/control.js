@@ -15,6 +15,7 @@ gallery.control = null;
 		_sketches : [],
 		_maxMediaCount : 0,
 		init : function(media) {
+			this._gallery = $("#gallery");
 			this._sketches = $.extend([], Processing.instances);
 			
 			// Iterate through all the projects
@@ -72,11 +73,7 @@ gallery.control = null;
 				if(!control.isZoomedOut)
 					control._hideNav();
 			});
-			
-			// When scrolled to project edge, open adjacent project
-/* 			$(window).scroll(function(){
-			}); */
-			
+						
 			// Listen for window resize
 			$(window).resize(function(){
 				// Only resize what's open
@@ -102,7 +99,7 @@ gallery.control = null;
 			var media = $(".medium");
 			var numMedium = media.length;
 			var scaleX = 1/numMedium;
-
+			
 			$.each(media, function(m, med){
 				var mediumEl = $(med);
 				var scale = "scale(" + scaleX + "," + scaleX + ")";
