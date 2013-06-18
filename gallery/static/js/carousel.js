@@ -106,6 +106,7 @@ gallery.carousel = null;
 			
 			//Vertical align media items
 			$.each(slide.children(".media"), function(e, el){
+				console.log(el);
 				var el = $(el);
 				el.css("margin-top" , -el.height()/2 + "px");
 			});
@@ -117,16 +118,16 @@ gallery.carousel = null;
 		if(this._isPaused)
 			return;
 		
-		// Leave the current slide if it is not
-		// also the slide we're trying to go to
-		if(this._currentSlideIndex != this._nextSlideIndex)
-			this.goFromSlide(this._currentSlideIndex);
-
 		var thisCar = this;
 		var isPreview = gallery.control.isZoomedOut == true ? true : false;
 		var isLastSlide = function() { 
 			return thisCar._nextSlideIndex == thisCar._lastSlideIndex;
 		}
+
+		// Leave the current slide if it is not
+		// also the slide we're trying to go to
+		if(this._currentSlideIndex != this._nextSlideIndex)
+			this.goFromSlide(this._currentSlideIndex, isPreview);
 
 		// Go to next slide
 		this.goToSlide(this._nextSlideIndex, isPreview, isLastSlide(), function(){
@@ -184,7 +185,7 @@ gallery.carousel = null;
 		var slide = slideObj.slide;
 		var transitionTime;
 		
-		if(slide.hasClass("slide-in")) {
+		if(slide.hasClass("slide-in") &&  !isPreview) {
 			slide.css("opacity" , 1).slideUp("medium", function(){
 				$(this).css("display", "block");
 			});
@@ -220,7 +221,7 @@ gallery.carousel = null;
 	}
 	
 	// Leave a particular slide
-	Carousel.prototype.goFromSlide = function(slideKey, callback) {
+	Carousel.prototype.goFromSlide = function(slideKey, isPreview, callback) {
 		if(slideKey < 0)
 			return;
 		var thisCar = this;
@@ -233,7 +234,7 @@ gallery.carousel = null;
 			thisCar.onSlideBefore(slide, index, index+1);
 		}
 		
-		if(slide.hasClass("slide-away")) {
+		if(slide.hasClass("slide-away") && !isPreview) {
 			slide.slideUp("slow", function() { 
 				onComplete();
 				$(this).css({
