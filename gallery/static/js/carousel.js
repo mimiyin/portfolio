@@ -106,7 +106,6 @@ gallery.carousel = null;
 			
 			//Vertical align media items
 			$.each(slide.children(".media"), function(e, el){
-				console.log(el);
 				var el = $(el);
 				el.css("margin-top" , -el.height()/2 + "px");
 			});

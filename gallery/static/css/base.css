@@ -129,6 +129,11 @@ li {
 
 #gallery ul.carousel li img {
 	width: 100%;
+	height: auto !important;
+}
+
+#gallery .medium.preview #rgby img {
+	width: 200% !important;
 }
 
 #gallery .medium.preview ul.carousel li[type=flickr] embed {
@@ -226,4 +231,17 @@ span.project-tagline {
 	border: 2px solid white;
 	background: transparent;
 	display: none;
+}
+
+/* LOGO */
+#logo {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: inherit;
+	font-size: 67em;
+	overflow: hidden;
+	padding-left: 3.5%;
+	color: #efefef;
 }

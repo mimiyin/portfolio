@@ -155,8 +155,8 @@ gallery.project = null;
 				vimeo.width("100%");
 				vimeo.height(vimeo.width()*.562);
 				vimeo.css("margin-left", 0);
-			}
-		});	
+				}
+			});			
 	}
 	
 	Project.prototype._calcZoomedOutHeight = function() {
