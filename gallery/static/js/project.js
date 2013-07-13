@@ -6,11 +6,11 @@ gallery.project = null;
 	var SketchPlayer = gallery.sketchPlayer;
 	var VimeoPlayer = gallery.vimeoPlayer;
 	
-	var Project = function Project(project, percHeight) {
+	var Project = function Project(project, heightFactor) {
 		this.code = project.code;
 		this.medium = project.medium;
 		this.order = project.order;
-		this._percHeight = percHeight;
+		this._heightFactor = heightFactor;
 		this.navItem = $("#nav-for-" + this.code);
 		this.div = $("#" + this.code);
 
@@ -18,8 +18,14 @@ gallery.project = null;
 
 		// Find videos and sketches
 		this._players = {};	
+		// Find flickrs
+		this._flickrs = this.div.find("li[type=flickr] embed");
+		// Find videos
+		this._vimeos = [];
 		// Keep track of sketches for height resizing
 		this._sketches = [];
+		
+		
 		
 		$.each(this.div.find($("li.player")), function(p, player){
 			var type = $(player).attr("type");
@@ -35,7 +41,8 @@ gallery.project = null;
 				var vimeo = $(player).find("iframe.vimeo");
 				id = vimeo.attr("id");
 				var vimeoPlayer = vimeos[id];
-				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);				
+				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);
+				thisProject._vimeos.push(vimeo);
 				break;
 			}
 		});	
@@ -49,7 +56,7 @@ gallery.project = null;
 			},
 		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
 		    	// Only play featured movies if we're zoomed out
-		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || slide.hasClass("featured"))) {		    	
+		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || (slide.hasClass("featured")))) {		    	
 			    	var id = $(slide.children()[0]).attr("id");
 			    	thisProject._players[id].play(callback || null);
 			    	}
@@ -108,30 +115,24 @@ gallery.project = null;
 	}
 		
 	// Zoom out into gallery map view
-	Project.prototype.zoomOut = function(h, isResizing) {
-		if(!isResizing)
-			this.start();
+	Project.prototype.zoomOut = function() {
+		this.start();
 		var thisProject = this;
 		this.div.animate({
 			opacity : .1,
 			top : 0,
 			left : 0,
-			height : h + "px",
+			height : thisProject._calcZoomedOutHeight(),
 			overflow : 'hidden',
-		}, Math.random()*5000 + 2500, function() {
+		}, Math.random()*2000 + 500, function() {
 			$(this).fadeTo(Math.random()*10000 + 2500, 1);
-			thisProject.resizeSketches();
-			thisProject.onResizeHeight();
+			thisProject.resizeMedia();
+			if(thisProject._carousel)
+				thisProject._carousel.middleAlignMedia();		
 			})
 	}
 	
-	// Middle aligning media items (videos, sketches)
-	Project.prototype.onResizeHeight = function() {
-		if(this._carousel)
-			this._carousel.middleAlignMedia();
-	}
-	
-	Project.prototype.resizeSketches = function() {
+	Project.prototype.resizeMedia = function() {
 		var thisProject = this;
 		// Scale this project's Processing sketches
 		$.each(this._sketches, function(s, sketch){
@@ -142,20 +143,38 @@ gallery.project = null;
 			var scaleY = thisProject.div.height()/height || 1;
 			sketch.resize(scaleX, scaleY);
 			});	
+	
+		// Scale this project's Processing sketches
+		$.each(this._vimeos, function(v, vimeo){
+			if(gallery.control.isZoomedOut && thisProject.div.width() < thisProject.div.height()*1.77) {
+				vimeo.height(thisProject.div.height());
+				vimeo.width(vimeo.height()*1.78);
+				vimeo.css("margin-left", -(vimeo.width()-thisProject.div.width())/2);
+			}
+			else {
+				vimeo.width("100%");
+				vimeo.height(vimeo.width()*.562);
+				vimeo.css("margin-left", 0);
+			}
+		});	
+	}
+	
+	Project.prototype._calcZoomedOutHeight = function() {
+		return $(window).height()*this._heightFactor;
 	}
 	
 	// Make project div the size of the window
 	Project.prototype.fitToWindow = function() {
 		var newWidth = $(window).width();
-		var newHeight = $(window).height();
+		var newHeight = gallery.control.isZoomedOut ? this._calcZoomedOutHeight() : $(window).height();
 		var oldHeight = this.div.height();
 
 		this.div.width(newWidth);
 		this.div.height(newHeight);
-		this.resizeSketches();
+		this.resizeMedia();
 		
-		//this.div.shift(0, oldHeight-newHeight, 0, 1);
-		this.onResizeHeight();
+		if(this._carousel)
+			this._carousel.middleAlignMedia();
 		}
 		
 	gallery.project = Project;

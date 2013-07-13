@@ -13,7 +13,7 @@
 		}, speed || 0);
 		
 		//Start animating in at 80% completion
-		setTimeout(callback, speed*.8);
+		setTimeout(function() { if(callback) callback(); }, speed*.8);
 	}
 		
 })( jQuery );

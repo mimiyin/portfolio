@@ -4,7 +4,7 @@ gallery.carousel = null;
 (function(){
 	var Carousel = function(element, options) {
 		var defaults = {
-				normal : { fadeIn : 5000, fadeOut : 1000 },
+				normal : { fadeIn : 1000, fadeOut : 500 },
 				title : { fadeIn : 1000, fadeOut : 5000, delay : 7500 },
 				isAuto : false,
 		}
@@ -120,6 +120,7 @@ gallery.carousel = null;
 		
 		var thisCar = this;
 		var isPreview = gallery.control.isZoomedOut == true ? true : false;
+			
 		var isLastSlide = function() { 
 			return thisCar._nextSlideIndex == thisCar._lastSlideIndex;
 		}
@@ -212,11 +213,11 @@ gallery.carousel = null;
 		
 		// Don't wait for callbacks to move onto next slide in Preview mode
 		if(isPreview) {
-			var delayFactor = slide.hasClass("featured") ? 5000 : 1000;
+			var delayFactor = slide.hasClass("featured") ? 10000 : 0;
 			this._nextTimeOut = setTimeout(function(){ 
 				thisCar._nextSlideIndex = isLastSlide? 0 : thisCar._nextSlideIndex + 1;
 				thisCar._cycle();
-				}, Math.random()*10000 + delayFactor);	
+				}, Math.random()*20000 + delayFactor);	
 		}
 	}
 	

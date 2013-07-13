@@ -24,8 +24,11 @@ gallery.control = null;
 				if(med.length > control._maxMediaCount)
 					control._maxMediaCount = med.length;
 				control._media.push([]);
+			});
+			
+			$.each(media, function(m, med){			
 				$.each(med, function(p, project){
-					var newProject = new gallery.project(project, 1/med.length);
+					var newProject = new gallery.project(project, control._maxMediaCount/med.length);
 					control._media[m].push(newProject);
 					control._projects[project.code] = newProject;
 										
@@ -48,15 +51,12 @@ gallery.control = null;
 			//Hook up nav items
 			this._nav.find("#zoom-out").click(function() { control._zoomOut() });
 			var thisCar = this;
-			console.log(utils.getRandom(thisCar._projects));
 			this._nav.find("#magic-eight-ball").click(function() { 
 				var getRandomProject = function() {
 					var randomProject = utils.getRandom(thisCar._projects);
 					if(randomProject.code == control._currentProject.code)
 						getRandomProject();
 					else {
-						console.log("RANDOM PROJECT:");
-						console.log(randomProject);
 						return randomProject;
 					}
 				}
@@ -78,8 +78,6 @@ gallery.control = null;
 			$(window).resize(function(){
 				// Only resize what's open
 				control._fitProjectsToWindow();
-				if(control.isZoomedOut)
-					control._zoomOut(true);
 			});
 
 			// Resize everything
@@ -90,9 +88,10 @@ gallery.control = null;
 		},
 		
 		// Gallery Map
-		_zoomOut : function(isResizing) {
+		_zoomOut : function() {
 			console.log("ZOOMING OUT");
 			control.isZoomedOut = true;
+			
 			this._nav.slideUp("fast");
 			this._currentMediumInd = 0;
 			this._currentProjectInd = 0;
@@ -115,16 +114,16 @@ gallery.control = null;
 					// Grab the projects for this medium
 					var medium = control._media[m];
 					// Scale the height relative to medium with maxNum of projects
-					var height = $(window).height()*control._maxMediaCount/medium.length;
+					var heightFactor = control._maxMediaCount/medium.length;
 					$.each(medium, function(p, project){
-						project.zoomOut(height, isResizing);
+						project.zoomOut(heightFactor);
 						});					
 					});	
 		},
 		
 		// Show nav for 5 seconds after moving mouse
 		_showNav : function(isAutoHide) {
-			this._nav.stop(true, true);
+			this._nav.stop(true, false);
 			this._nav.slideDown("slow", function(){
 				$(this).css("display", "block");
 				if(isAutoHide)
@@ -162,7 +161,7 @@ gallery.control = null;
 			}, 2500);
 			
 			// Shift the selector
-			this._selector.shift(-leftShift, -topShift, 19.5, 27, 3000)
+			this._selector.shift(-leftShift, -topShift, 19.5, 33, 3000)
 
 
 			// Open up this project

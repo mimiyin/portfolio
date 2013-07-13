@@ -33,7 +33,7 @@
 
 <script type="text/javascript">
 var vimeos = {};
-var vimeoCount = 0;
+var mediaCount = 0;
 $(window).load(function(){
 	$("body").animate({ opacity : 1}, 1000);
 });
@@ -43,13 +43,23 @@ $(document).ready(function(){
 	var media = {{media.items | jsonify }};
 	// Catching the ready event early enough
 	var vimeoIframes = $("#gallery").find("li[type=vimeo] iframe");
+	var flickrIframes = $("#gallery").find("li[type=flickr] iframe");
+	
 	$.each(vimeoIframes, function(v, vimeo){
 		$f(vimeo).addEvent("ready", function(player_id){
-			vimeoCount++;
+			mediaCount++;
 			vimeos[player_id] = $f(player_id);
- 			if(vimeoCount == vimeoIframes.length)
+ 			if(mediaCount == vimeoIframes.length + flickrIframes.length)
 				setTimeout(function(){ gallery.control.init(media); }, 1000);
 			});
+	});
+	
+	$.each(flickrIframes, function(f, flickr) {
+		flickr.load(function(){
+			mediaCount++;
+			if(mediaCount == vimeoIframes.length + flickrIframes.length)
+				setTimeout(function(){ gallery.control.init(media); }, 1000);
+		});
 	});
 });
 </script>
