@@ -5,6 +5,7 @@ gallery.carousel = null;
 	var Carousel = function(element, options) {
 		var defaults = {
 				normal : { fadeIn : 1000, fadeOut : 500 },
+				still : { fadeIn : 1000, fadeOut : 500, delay: 10000 },
 				title : { fadeIn : 1000, fadeOut : 5000, delay : 7500 },
 				isAuto : false,
 		}
@@ -70,7 +71,7 @@ gallery.carousel = null;
 	Carousel.prototype._showNav = function(isAutoHide) {
 		if(gallery.control.isZoomedOut)
 			return;
-		this._nav.stop(true, true);
+		this._nav.stop(true, false);
 		var thisCar = this;
 		this._nav.slideDown("slow", function(){
 			$(this).css("display", "block");
@@ -92,7 +93,7 @@ gallery.carousel = null;
 		$.each(this._slides, function(s, slide){
 			var label = $(slide).attr("alt");
 			thisCar._nav.append($("<li>").addClass("carousel-nav-item").text(label).click(function(){
-				console.log("CLICKING ON: " + $(this).text());
+				//console.log("CLICKING ON: " + $(this).text());
 				thisCar.stop();
 				thisCar.start($(this).index());
 			}));
@@ -114,8 +115,10 @@ gallery.carousel = null;
 	
 	// Cycle through all the slides
 	Carousel.prototype._cycle = function() {
-		if(this._isPaused)
+		if(this._isPaused) {
+			//console.log("PAUSE!!!");
 			return;
+		}
 		
 		var thisCar = this;
 		var isPreview = gallery.control.isZoomedOut == true ? true : false;
@@ -179,6 +182,7 @@ gallery.carousel = null;
 	// Go to a particular slide
 	// If it's a movie, wait for it to finish
 	Carousel.prototype.goToSlide = function(slideKey, isPreview, isLastSlide, callback) {
+		
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey);
 		var slideObj = this._slideObjs[slideKey];

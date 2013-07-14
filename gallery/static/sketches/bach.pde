@@ -7,6 +7,7 @@ ArrayList squares = new ArrayList();
 int toss, t, m;
 float bg, bgspeed;
 float rFactor, gFactor, bFactor;
+float rFactorSpeed, gFactorSpeed, bFactorSpeed;
 
 float scaleX = 1;
 float scaleY = 1;
@@ -28,13 +29,12 @@ void setup() {
   bg = random()*255;  	
   bgspeed = 0.1;
   
-rFactor = random()*1;
-rFactorSpeed = 0.001;
-gFactor = random()*255;
-gFactorSpeed = 0.001;
-bFactor = random()*2;
-bFactorSpeed = 0.001;
-  
+  rFactor = random()*1;
+  rFactorSpeed = 0.001;
+  gFactor = random()*255;
+  gFactorSpeed = 0.001;
+  bFactor = random()*2;
+  bFactorSpeed = 0.001;
   
   noLoop();
   bach.volume = 0;

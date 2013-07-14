@@ -11,7 +11,7 @@ gallery.sketchPlayer = null;
 		try { 
 			this._audio = this.sketch.getAudio(); 
 			this._audio.addEventListener('ended', function(){
-				console.log("ENDED!");
+				//console.log("ENDED!");
 				thisSP._audio.currentTime = 0;
 				thisSP.sketch.reset();
 			})
@@ -30,7 +30,7 @@ gallery.sketchPlayer = null;
 				
 	}
 	SketchPlayer.prototype.pause = function() {
-		console.log("PAUSING!!! " + this.id);
+		//console.log("PAUSING!!! " + this.id);
 		// Cancel out any callbacks
 		this._callback = null;
 		var thisSP = this;
@@ -62,7 +62,7 @@ gallery.sketchPlayer = null;
 	}
 	
 	SketchPlayer.prototype._turnDown = function(callback) { 
-		console.log("TURNING DOWN!!! " + this.id);
+		//console.log("TURNING DOWN!!! " + this.id);
 		this._isTurningDown = true;
 		function turnDown(thisSP) {
 			//If playing, don't keep turning down the volume
@@ -80,7 +80,7 @@ gallery.sketchPlayer = null;
 	}
 	
 	SketchPlayer.prototype._turnUp = function() { 
-		console.log("TURNING UP!!! " + this.id);
+		//console.log("TURNING UP!!! " + this.id);
 		this._isTurningDown = false;
 		function turnUp(thisSP) {
 			//If paused, don't keep turning up the volume
@@ -106,11 +106,20 @@ gallery.vimeoPlayer = null;
 		this.id = id;
 		this.type = "vimeo";
 		this._video = video;
+		
+		var thisVP = this;
+		this._video.addEvent("finish", function(){ 
+			console.log("FINISHED VIDEO!!!");
+			thisVP.onFinish();
+			})
+		
 		this._mute();			
 	}
 	
-	VimeoPlayer.prototype.finish = function() {
-		this._callback();
+	VimeoPlayer.prototype.onFinish = function() {
+		var callback = this._getCallback();
+		console.log(callback);
+		callback();
 	}
 	
 	VimeoPlayer.prototype.reset = function() {
@@ -126,14 +135,20 @@ gallery.vimeoPlayer = null;
 			thisVP._video.api("pause");
 		});
 	}
+		
+	VimeoPlayer.prototype._getCallback = function() {
+		return this._callback;
+	}
+	
 	VimeoPlayer.prototype.play = function(callback) { 
-		console.log("PLAYING!!! " + this.id);
-		console.log("IS ZOOMEDOUT: " + gallery.control.isZoomedOut);
+
+//		console.log("PLAYING!!! " + this.id);
+//		console.log("IS ZOOMEDOUT: " + gallery.control.isZoomedOut);
 		this._video.api("play");
 		if(!gallery.control.isZoomedOut) {
 			this._turnUp();
 			// Move to next slide when video is finished playing
-			if(callback)
+			if(callback) 
 				this._callback = callback;
 		}
 	}

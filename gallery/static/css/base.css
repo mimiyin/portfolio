@@ -8,6 +8,10 @@ html, body, div, span, p, img {
 	color: #999;
 }
 
+canvas {
+	font-family: "Myriad Pro", "Calibri", "Lucida", sans-serif;	
+}
+
 body {
 	width: 100%;
 	min-width: 800px;
@@ -181,10 +185,13 @@ span.project-tagline {
 #gallery ul.carousel ul.carousel-nav li {
 	opacity: 1;
 	font-size: 1em;
-	color: #999;
+	margin: 0;
+	padding: 0;
+	color: #555;
 	background: transparent;
 	white-space: pre-wrap;
 	cursor: pointer;
+	height: auto;
 }
 
 /* NAV */

@@ -37,7 +37,7 @@ gallery.control = null;
 					//Add click listener for each project on project div
 					newProject.div.click( newProject, function(e){ 
 						if(control.isZoomedOut) {
-							console.log(e.data);
+							//console.log(e.data);
 							control._zoomIn(e.data); 
 							}
 						});
@@ -91,10 +91,10 @@ gallery.control = null;
 		
 		// Gallery Map
 		_zoomOut : function() {
-			console.log("ZOOMING OUT");
+			//console.log("ZOOMING OUT");
 			control.isZoomedOut = true;
 			
-			this._nav.slideUp("fast");
+			this._hideNav();
 			this._currentMediumInd = 0;
 			this._currentProjectInd = 0;
 			var media = $(".medium");
