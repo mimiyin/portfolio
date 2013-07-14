@@ -71,7 +71,7 @@ gallery.carousel = null;
 	Carousel.prototype._showNav = function(isAutoHide) {
 		if(gallery.control.isZoomedOut)
 			return;
-		this._nav.stop(true, false);
+		this._nav.stop(true, true);
 		var thisCar = this;
 		this._nav.slideDown("slow", function(){
 			$(this).css("display", "block");

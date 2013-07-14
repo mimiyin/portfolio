@@ -38,11 +38,11 @@ gallery.project = null;
 				thisProject._sketches.push(instance);
 				break;
 			case "vimeo":
-				var vimeo = $(player).find("iframe.vimeo");
-				id = vimeo.attr("id");
+				var vimeoEl = $(player).find("iframe.vimeo");
+				id = vimeoEl.attr("id");
 				var vimeoPlayer = vimeos[id];
-				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);
-				thisProject._vimeos.push(vimeo);
+				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer, vimeoEl.parents("li[type=vimeo]"));
+				thisProject._vimeos.push(vimeoEl);
 				break;
 			}
 		});	
@@ -104,7 +104,7 @@ gallery.project = null;
 		else if(this._isPlaying)
 			callback = function() { thisProject.stop(); };	
 
-		this.div.shift(leftShift, topShift, 100, 100, isPlaying ? 3000 : 2500, callback);
+		this.div.shift(leftShift, topShift, 100, 100, isPlaying ? 1500 : 1000, callback);
 		
 	}
 	
@@ -171,6 +171,7 @@ gallery.project = null;
 
 		this.div.width(newWidth);
 		this.div.height(newHeight);
+		this.div.css("font-size", $(window).width()*$(window).height()*.0000025 + "em");
 		this.resizeMedia();
 		
 		if(this._carousel)

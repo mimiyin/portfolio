@@ -125,7 +125,7 @@ gallery.control = null;
 		
 		// Show nav for 5 seconds after moving mouse
 		_showNav : function(isAutoHide) {
-			this._nav.stop(true, false);
+			this._nav.stop(true, true);
 			this._nav.slideDown("slow", function(){
 				$(this).css("display", "block");
 				if(isAutoHide)

@@ -102,12 +102,21 @@ gallery.vimeoPlayer = null;
 
 (function(){
 
-	var VimeoPlayer = function VimeoPlayer(id, video) {
+	var VimeoPlayer = function VimeoPlayer(id, video, videoEl) {
 		this.id = id;
 		this.type = "vimeo";
 		this._video = video;
+		this._isPlaying = false;
 		
 		var thisVP = this;
+		
+		console.log(id);
+		
+		videoEl.click(function(){
+			thisVP._toggle();
+			console.log("TOGGLING!!! " + thisVP._isPlaying);
+			});
+		
 		this._video.addEvent("finish", function(){ 
 			console.log("FINISHED VIDEO!!!");
 			thisVP.onFinish();
@@ -119,11 +128,18 @@ gallery.vimeoPlayer = null;
 	VimeoPlayer.prototype.onFinish = function() {
 		var callback = this._getCallback();
 		console.log(callback);
-		callback();
+		if(callback) callback();
 	}
 	
 	VimeoPlayer.prototype.reset = function() {
 		this._video.api()
+	}
+	
+	VimeoPlayer.prototype._toggle = function() {
+		if(this._isPlaying)
+			thisVP._video.api("pause");
+		else
+			this._video.api("play");
 	}
 	
 	VimeoPlayer.prototype.pause = function() {
@@ -133,6 +149,7 @@ gallery.vimeoPlayer = null;
 		var thisVP = this;
 		this._turnDown(function(){
 			thisVP._video.api("pause");
+			thisVP._isPlaying = false;
 		});
 	}
 		
@@ -145,6 +162,8 @@ gallery.vimeoPlayer = null;
 //		console.log("PLAYING!!! " + this.id);
 //		console.log("IS ZOOMEDOUT: " + gallery.control.isZoomedOut);
 		this._video.api("play");
+		this._isPlaying = true;
+		
 		if(!gallery.control.isZoomedOut) {
 			this._turnUp();
 			// Move to next slide when video is finished playing
