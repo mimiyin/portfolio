@@ -104,7 +104,7 @@ gallery.project = null;
 		else if(this._isPlaying)
 			callback = function() { thisProject.stop(); };	
 
-		this.div.shift(leftShift, topShift, 100, 100, isPlaying ? 1500 : 1000, callback);
+		this.div.shift(leftShift, topShift, 100, 100, isPlaying ? 1000 : 500, callback);
 		
 	}
 	
@@ -112,6 +112,8 @@ gallery.project = null;
 	// Which is needed to make the "shift" feature work
 	Project.prototype.zoomIn = function(row) {
 		this.div.css("top", row*100 + "%");
+		this.div.height($(window).height());
+		this._carousel.middleAlignMedia();
 	}
 		
 	// Zoom out into gallery map view
@@ -127,8 +129,7 @@ gallery.project = null;
 		}, Math.random()*2000 + 500, function() {
 			$(this).fadeTo(Math.random()*10000 + 2500, 1);
 			thisProject.resizeMedia();
-			if(thisProject._carousel)
-				thisProject._carousel.middleAlignMedia();		
+			thisProject._carousel.middleAlignMedia();		
 			})
 	}
 	
@@ -143,10 +144,10 @@ gallery.project = null;
 			var scaleY = thisProject.div.height()/height || 1;
 			sketch.resize(scaleX, scaleY);
 			});	
-	
+		
 		// Scale this project's Processing sketches
 		$.each(this._vimeos, function(v, vimeo){
-			if(gallery.control.isZoomedOut && thisProject.div.width() < thisProject.div.height()*1.77) {
+			if(thisProject.div.width() < thisProject.div.height()*1.77) {
 				vimeo.height(thisProject.div.height());
 				vimeo.width(vimeo.height()*1.78);
 				vimeo.css("margin-left", -(vimeo.width()-thisProject.div.width())/2);
@@ -171,11 +172,10 @@ gallery.project = null;
 
 		this.div.width(newWidth);
 		this.div.height(newHeight);
-		this.div.css("font-size", $(window).width()*$(window).height()*.0000025 + "em");
+		this.div.css("font-size", $(window).width()*$(window).height()*.0000015 + "em");
 		this.resizeMedia();
 		
-		if(this._carousel)
-			this._carousel.middleAlignMedia();
+		this._carousel.middleAlignMedia();
 		}
 		
 	gallery.project = Project;

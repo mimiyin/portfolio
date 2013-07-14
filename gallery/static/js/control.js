@@ -9,6 +9,8 @@ gallery.control = null;
 		isZoomedOut : true,
 		_currentMediumInd : 0,
 		_currentProjectInd : 0,
+		_currentMediumIndNav : 0,
+		_currentProjectIndNav : 0,
 		_currentProject : null,
 		_media : [],	
 		_projects : {},
@@ -153,18 +155,21 @@ gallery.control = null;
 				});			
 			}
 
-			// Calculate shift
-			var leftShift = this._currentMediumInd - onProject.medium;
-			var topShift =  this._currentProjectInd - onProject.order;	
+			// Calculate shift for Nav
+			var leftShiftNav = this._currentMediumIndNav - onProject.medium;
+			var topShiftNav =  this._currentProjectIndNav - onProject.order;	
 			
 			// Show nav after 2.5 seconds
 			setTimeout(function(){
 				control._showNav(true);
 			}, 2500);
-			
+						
 			// Shift the selector
-			this._selector.shift(-leftShift, -topShift, 19.5, 33, 3000)
+			this._selector.shift(-leftShiftNav, -topShiftNav, 19.5, 33, 3000)
 
+			// Calculate shift for Project
+			var leftShift = this._currentMediumInd - onProject.medium;
+			var topShift =  this._currentProjectInd - onProject.order;	
 
 			// Open up this project
 			// Close all others
@@ -175,6 +180,9 @@ gallery.control = null;
 
 			this._currentMediumInd = onProject.medium;
 			this._currentProjectInd = onProject.order;
+			this._currentMediumIndNav = onProject.medium;
+			this._currentProjectIndNav = onProject.order;
+
 			this._currentProject = onProject;
 
 			this.isZoomedOut = false;

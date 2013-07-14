@@ -110,8 +110,6 @@ gallery.vimeoPlayer = null;
 		
 		var thisVP = this;
 		
-		console.log(id);
-		
 		videoEl.click(function(){
 			thisVP._toggle();
 			console.log("TOGGLING!!! " + thisVP._isPlaying);

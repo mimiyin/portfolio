@@ -75,6 +75,7 @@ gallery.carousel = null;
 		var thisCar = this;
 		this._nav.slideDown("slow", function(){
 			$(this).css("display", "block");
+			console.log("HIDING AUTO? " + isAutoHide);
 			if(isAutoHide)
 				thisCar._hideNav();
 		})
@@ -95,7 +96,8 @@ gallery.carousel = null;
 			thisCar._nav.append($("<li>").addClass("carousel-nav-item").text(label).click(function(){
 				//console.log("CLICKING ON: " + $(this).text());
 				thisCar.stop();
-				thisCar.start($(this).index());
+				var thisNavItem = $(this);
+				setTimeout(function(){ thisCar.start(thisNavItem.index(), true); }, 1000);
 			}));
 		});
 	}
@@ -116,7 +118,7 @@ gallery.carousel = null;
 	// Cycle through all the slides
 	Carousel.prototype._cycle = function() {
 		if(this._isPaused) {
-			//console.log("PAUSE!!!");
+			console.log("PAUSE!!!");
 			return;
 		}
 		
@@ -150,16 +152,18 @@ gallery.carousel = null;
 	}
 	
 	// Start up the carousel
-	Carousel.prototype.start = function(slideKey) {
-		this._isPaused = false;
+	Carousel.prototype.start = function(slideKey, isRestarting) {
 		this._nextSlideIndex = this._testSlideKey(slideKey) || 0;		
+		this._isPaused = false;
 		this._cycle();
 		
 		var thisCar = this;
 		// Show nav after 2.5 seconds
-		setTimeout(function(){
-			thisCar._showNav(true);
-		}, 2500);
+		if(!isRestarting) {
+			setTimeout(function(){
+				thisCar._showNav(true);
+			}, 2500);
+		}
 	}
 		
 	// Stop cycling animations.
@@ -182,6 +186,7 @@ gallery.carousel = null;
 	// Go to a particular slide
 	// If it's a movie, wait for it to finish
 	Carousel.prototype.goToSlide = function(slideKey, isPreview, isLastSlide, callback) {
+		//console.log("GOING TO SLIDE: " + slideKey);
 		
 		var thisCar = this;
 		var index = this._testSlideKey(slideKey);
@@ -189,23 +194,15 @@ gallery.carousel = null;
 		var slide = slideObj.slide;
 		var transitionTime;
 		
-		if(slide.hasClass("slide-in") &&  !isPreview) {
-			slide.css("opacity" , 1).slideUp("medium", function(){
-				$(this).css("display", "block");
-			});
-			transitionTime = 200;
-		}
-		else {
-			slide.animate({ opacity : 1 }, slideObj.fadeIn);
-			transitionTime = slideObj.fadeIn;
-		}
+		slide.animate({ opacity : 1 }, slideObj.fadeIn);
+		transitionTime = slideObj.fadeIn;
 			
 		// Kick off media right away
 		thisCar.onSlideAfter(slide, index, index-1, function(){
 			// Callback to move onto next slide fades in and 
 			// has been held in place (if there is a delay specified)
 			// If the player is paused, this callback gets nuked
-			setTimeout(function() {
+			thisCar._nextTimeOut = setTimeout(function() {
 				if(callback)
 					callback();
 			}, transitionTime + ( slideObj.delay || 0) );	
@@ -238,18 +235,8 @@ gallery.carousel = null;
 			thisCar.onSlideBefore(slide, index, index+1);
 		}
 		
-		if(slide.hasClass("slide-away") && !isPreview) {
-			slide.slideUp("slow", function() { 
-				onComplete();
-				$(this).css({
-					opacity: 0,
-					display : "block"
-					});
-				});
-		}
-		else {
-			slide.animate({ opacity : 0 }, slideObj.fadeOut, onComplete);
-		}
+		slide.animate({ opacity : 0 }, slideObj.fadeOut, onComplete);
+		
 	}	
 	
 	//Test slide key
