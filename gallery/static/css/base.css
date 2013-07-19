@@ -140,13 +140,6 @@ li {
 	width: 200% !important;
 }
 
-#gallery .medium.preview ul.carousel li[type=flickr] embed {
-	transform : scale(2,2) translate(25%, 25%);
-	-moz-transform: scale(2,2) translate(25%, 25%);
-	-webkit-transform : scale(2,2) translate(25%, 25%);
-}
-
-
 /* TITLE SLIDE */	
 
 li.title-slide span {
@@ -173,7 +166,7 @@ span.project-tagline {
 	position: absolute;
 	right: 5px;
 	top: 0;
-	width: 200px;
+	width: 120px;
 	padding: 5px 10px 5px 5px;
 	background: rgba(255,255,255, .5);
 }
@@ -184,7 +177,7 @@ span.project-tagline {
 
 #gallery ul.carousel ul.carousel-nav li {
 	opacity: 1;
-	font-size: 1em;
+	font-size: 16px;
 	margin: 0;
 	padding: 0;
 	color: #555;

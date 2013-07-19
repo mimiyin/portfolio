@@ -56,7 +56,7 @@ gallery.project = null;
 			},
 		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
 		    	// Only play featured movies if we're zoomed out
-		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || (slide.hasClass("featuredd")))) {		    	
+		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || ((slide.hasClass("featured") && Math.random() > .67)))) {		    	
 			    	var id = $(slide.children()[0]).attr("id");
 			    	thisProject._players[id].play(callback || null);
 			    	}
