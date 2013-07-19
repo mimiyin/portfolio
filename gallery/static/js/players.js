@@ -110,11 +110,6 @@ gallery.vimeoPlayer = null;
 		
 		var thisVP = this;
 		
-		videoEl.click(function(){
-			thisVP._toggle();
-			console.log("TOGGLING!!! " + thisVP._isPlaying);
-			});
-		
 		this._video.addEvent("finish", function(){ 
 			console.log("FINISHED VIDEO!!!");
 			thisVP.onFinish();

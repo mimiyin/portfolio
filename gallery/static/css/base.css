@@ -71,8 +71,6 @@ li {
 
 .medium.preview .project {
 	overflow: hidden;
-    -webkit-user-select: none; /* this will work for QtWebKit in future */ 
-    -webkit-user-drag: none; 
 }
 
 .project {
