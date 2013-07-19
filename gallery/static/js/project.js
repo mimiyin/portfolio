@@ -12,7 +12,7 @@ gallery.project = null;
 		this.order = project.order;
 		this._heightFactor = heightFactor;
 		this.navItem = $("#nav-for-" + this.code);
-		this.div = $("#" + this.code);
+		this.div = $("#" + this.code).click(function(){ console.log("CLICKING ON THIS!!!"); });
 
 		var thisProject = this;		
 
