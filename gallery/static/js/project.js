@@ -12,7 +12,7 @@ gallery.project = null;
 		this.order = project.order;
 		this._heightFactor = heightFactor;
 		this.navItem = $("#nav-for-" + this.code);
-		this.div = $("#" + this.code).click(function(){ console.log("CLICKING ON THIS!!!"); });
+		this.div = $("#" + this.code);
 
 		var thisProject = this;		
 
@@ -38,7 +38,7 @@ gallery.project = null;
 				thisProject._sketches.push(instance);
 				break;
 			case "vimeo":
-				var vimeoEl = $(player).find("iframe.vimeo");
+				var vimeoEl = $(player).find("iframe.vimeo").click(thisProject.div.click());
 				id = vimeoEl.attr("id");
 				var vimeoPlayer = vimeos[id];
 				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer, vimeoEl.parents("li[type=vimeo]"));
