@@ -71,6 +71,8 @@ li {
 
 .medium.preview .project {
 	overflow: hidden;
+    -webkit-user-select: none; /* this will work for QtWebKit in future */ 
+    -webkit-user-drag: none; 
 }
 
 .project {
@@ -200,7 +202,7 @@ span.project-tagline {
 	padding: 10px 20px 5px;
 	color: #fff;
 	opacity: .5;
-	z-index: 2;
+	z-index: 100000000000000000000000000000000000000000000000;
 }
 
 #nav {
@@ -231,6 +233,10 @@ span.project-tagline {
 	border: 2px solid white;
 	background: transparent;
 	display: none;
+}
+
+.win #nav #selector {
+	margin-top: 0;
 }
 
 /* LOGO */
