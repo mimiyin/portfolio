@@ -46,12 +46,15 @@ $(document).ready(function(){
 	// Catching the ready event early enough
 	var vimeoIframes = $("#gallery").find("li[type=vimeo] iframe");
 	var flickrIframes = $("#gallery").find("li[type=flickr] iframe");
+	var stills = $("#gallery").find("li[type=still] img");
+	
+	var totalMedia = $(".media").length;
 	
 	$.each(vimeoIframes, function(v, vimeo){
 		$f(vimeo).addEvent("ready", function(player_id){
 			mediaCount++;
 			vimeos[player_id] = $f(player_id);
- 			if(mediaCount == vimeoIframes.length + flickrIframes.length)
+ 			if(mediaCount == totalMedia)
 				setTimeout(function(){ gallery.control.init(media); }, 1000);
 			});
 	});
@@ -59,7 +62,15 @@ $(document).ready(function(){
 	$.each(flickrIframes, function(f, flickr) {
 		flickr.load(function(){
 			mediaCount++;
-			if(mediaCount == vimeoIframes.length + flickrIframes.length)
+			if(mediaCount == totalMedia)
+				setTimeout(function(){ gallery.control.init(media); }, 1000);
+		});
+	});
+	
+	$.each(stills, function(s, still) {
+		still.load(function(){
+			mediaCount++;
+			if(mediaCount == totalMedia)
 				setTimeout(function(){ gallery.control.init(media); }, 1000);
 		});
 	});

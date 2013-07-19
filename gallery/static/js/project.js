@@ -38,7 +38,7 @@ gallery.project = null;
 				thisProject._sketches.push(instance);
 				break;
 			case "vimeo":
-				var vimeoEl = $(player).find("iframe.vimeo").click(thisProject.div.click());
+				var vimeoEl = $(player).find("iframe.vimeo");
 				id = vimeoEl.attr("id");
 				var vimeoPlayer = vimeos[id];
 				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer, vimeoEl.parents("li[type=vimeo]"));
