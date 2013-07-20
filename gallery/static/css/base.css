@@ -140,6 +140,10 @@ li {
 	width: 200% !important;
 }
 
+#gallery ul.carousel li[type=vimeo] {
+	pointer-events : none;
+}
+
 /* TITLE SLIDE */	
 
 li.title-slide span {

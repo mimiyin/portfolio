@@ -30,7 +30,7 @@ gallery.control = null;
 				control._media.push([]);
 			});
 			
-			$.each(media, function(m, med){			
+			$.each(media, function(m, med){		
 				$.each(med, function(p, project){
 					var newProject = new gallery.project(project, control._maxMediaCount/med.length);
 					control._media[m].push(newProject);
