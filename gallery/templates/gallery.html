@@ -7,6 +7,7 @@
 
 
 <div id="gallery">
+	<div id="scrim"></div>
 	{% for m, medium in media.items %}
 		<div id="medium-{{m}}" class="medium">
 			{% for project in medium %}
@@ -38,6 +39,10 @@ $(window).load(function(){
 	$("body").animate({ opacity : 1}, 1000);
 });
 var init = function() {
+	$(document).click(function(){ console.log("CLICKING"); });
+	$(".project").mouseenter(function(){ console.log("MOUSING OVER: " + $(this).attr("id")); });
+	$(window).blur(function(){ console.log("CLICKING ON IFRAME!!!"); });
+	
 	Processing.logger = console;
 	var media = {{media.items | jsonify }};
 	// Catching the ready event early enough
