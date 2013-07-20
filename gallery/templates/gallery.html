@@ -48,7 +48,7 @@ $(document).ready(function(){
 	var flickrIframes = $("#gallery").find("li[type=flickr] iframe");
 	var stills = $("#gallery").find("li[type=still] img");
 	
-	var totalMedia = $(".media").length;
+	var totalMedia = vimeoIframes.length + flickrIframes.length + stills.length;
 	
 	$.each(vimeoIframes, function(v, vimeo){
 		$f(vimeo).addEvent("ready", function(player_id){
@@ -68,7 +68,7 @@ $(document).ready(function(){
 	});
 	
 	$.each(stills, function(s, still) {
-		still.load(function(){
+		$(still).load(function(){
 			mediaCount++;
 			if(mediaCount == totalMedia)
 				setTimeout(function(){ gallery.control.init(media); }, 1000);

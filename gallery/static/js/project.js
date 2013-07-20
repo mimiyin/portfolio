@@ -18,6 +18,8 @@ gallery.project = null;
 
 		// Find videos and sketches
 		this._players = {};	
+		// Find images
+		this._stills = this.div.find("li[type=still] img");
 		// Find flickrs
 		this._flickrs = this.div.find("li[type=flickr] embed");
 		// Find videos
@@ -145,19 +147,25 @@ gallery.project = null;
 			sketch.resize(scaleX, scaleY);
 			});	
 		
-		// Scale this project's Processing sketches
-		$.each(this._vimeos, function(v, vimeo){
-			if(thisProject.div.width() < thisProject.div.height()*1.77) {
-				vimeo.height(thisProject.div.height());
-				vimeo.width(vimeo.height()*1.78);
-				vimeo.css("margin-left", -(vimeo.width()-thisProject.div.width())/2);
-			}
-			else {
-				vimeo.width("100%");
-				vimeo.height(vimeo.width()*.562);
-				vimeo.css("margin-left", 0);
+		// Scale this project's videos and stills in the same way
+		var scaleToAlwaysFull = function(media) {
+			$.each(media, function(m, medium){
+				medium = $(medium);
+				if(thisProject.div.width() < thisProject.div.height()*1.77) {
+					medium.height(thisProject.div.height());
+					medium.width(medium.height()*1.78);
+					medium.css("margin-left", -(medium.width()-thisProject.div.width())/2);
 				}
-			});			
+				else {
+					medium.width("100%");
+					medium.height(medium.width()*.562);
+					medium.css("margin-left", 0);
+					}
+				});				
+		}
+		
+		scaleToAlwaysFull(this._stills);
+		scaleToAlwaysFull(this._vimeos);
 	}
 	
 	Project.prototype._calcZoomedOutHeight = function() {
