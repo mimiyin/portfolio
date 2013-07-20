@@ -18,7 +18,6 @@ gallery.control = null;
 		_maxMediaCount : 0,
 		init : function(media) {
 			$("#about").append($("<div>").attr("id","logo").html("&deg;C"));
-			
 			this._gallery = $("#gallery");
 			this._sketches = $.extend([], Processing.instances);
 			

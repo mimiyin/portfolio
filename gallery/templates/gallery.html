@@ -6,8 +6,6 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/css_browser_selector.js"></script>{% endaddtoblock %}
 
 
-
-
 <div id="gallery">
 	{% for m, medium in media.items %}
 		<div id="medium-{{m}}" class="medium">
@@ -39,8 +37,7 @@ var mediaCount = 0;
 $(window).load(function(){
 	$("body").animate({ opacity : 1}, 1000);
 });
-
-$(document).ready(function(){
+var init = function() {
 	Processing.logger = console;
 	var media = {{media.items | jsonify }};
 	// Catching the ready event early enough
@@ -74,8 +71,9 @@ $(document).ready(function(){
 				setTimeout(function(){ gallery.control.init(media); }, 1000);
 		});
 	});
-});
+}
 </script>
+
 {% include "nav.html" %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/utils.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/players.js"></script>{% endaddtoblock %}
@@ -83,3 +81,13 @@ $(document).ready(function(){
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/project.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/control.js"></script>{% endaddtoblock %}
 
+<!--[if IE]>
+	<div id="windows" class="alert">Best viewed in Chrome, Firefox or Safari.</div>
+<![endif]-->
+<!--[if !IE]> -->
+	<div class="alert"><span>&deg;</span> best viewed with sound <span>&deg;</span> </div>
+	<script type="text/javascript">
+		$(".alert").delay(10000).slideUp("slow");
+		$(document).ready(init);
+		</script>
+<!-- <![endif]-->

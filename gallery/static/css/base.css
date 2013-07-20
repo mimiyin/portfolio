@@ -8,6 +8,26 @@ html, body, div, span, p, img {
 	color: #999;
 }
 
+.alert {
+	width: 100%;
+	height: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding: 5px 20px;
+	background: rgba(0,0,0,.67);
+	color: #fff;
+	font-size: 1em;
+	text-align: center;
+	font-weight: normal;
+}
+
+.alert span {
+	font-size: 2em;
+	color: white;
+	padding: 0 5px;
+}
+
 canvas {
 	font-family: "Myriad Pro", "Calibri", "Lucida", sans-serif;	
 }
