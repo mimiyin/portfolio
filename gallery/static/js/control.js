@@ -9,7 +9,7 @@ gallery.control = null;
 		isZoomedOut : true,
 		_currentMediumInd : 0,
 		_currentProjectInd : 0,
-		_currentMediumIndNav : 0,
+		_currentMediumIndNav : 4,
 		_currentProjectIndNav : 0,
 		_currentProject : null,
 		_media : [],	
@@ -17,6 +17,9 @@ gallery.control = null;
 		_sketches : [],
 		_maxMediaCount : 0,
 		init : function(media) {
+			this._stupidBrowser = window.chrome;
+			
+			// LOGO!
 			$("#about").append($("<div>").attr("id","logo").html("&deg;C"));
 			this._gallery = $("#gallery");
 			this._sketches = $.extend([], Processing.instances);
@@ -34,9 +37,9 @@ gallery.control = null;
 					var newProject = new gallery.project(project, control._maxMediaCount/med.length);
 					control._media[m].push(newProject);
 					control._projects[project.code] = newProject;
-										
+					
 					//Add click listener for each project on project div
-					newProject.div.click( newProject, function(e){ 
+					newProject.div.click(newProject, function(e){ 
 						if(control.isZoomedOut) {
 							//console.log(e.data);
 							control._zoomIn(e.data); 
@@ -49,7 +52,7 @@ gallery.control = null;
 			});	
 			
 			this._nav = $("#nav");
-			this._selector = $("#selector").delay(2500).fadeIn("slow");
+			this._selector = $("#selector")
 			
 			//Hook up nav items
 			this._nav.find("#zoom-out").click(function() { control._zoomOut() });
@@ -68,7 +71,7 @@ gallery.control = null;
 				});
 			
 			this._nav.parent().mouseenter(function(){
-				if(!control.isZoomedOut)
+				if(!control.isZoomedOut || control._stupidBrowser)
 					control._showNav();
 			});
 			
@@ -94,8 +97,20 @@ gallery.control = null;
 		_zoomOut : function() {
 			//console.log("ZOOMING OUT");
 			control.isZoomedOut = true;
+						
+			if(this._stupidBrowser) {
+				console.log("STUPID BROWSER!!!");
+				// Show nav after 2.5 seconds
+				setTimeout(function(){
+					control._showNav(true);
+				}, 2500);
+			}
+			else 
+				control._hideNav(true);
 			
-			this._hideNav();
+			// Shift nav selector
+			this._shiftNav(4, 0);
+
 			this._currentMediumInd = 0;
 			this._currentProjectInd = 0;
 			var media = $(".medium");
@@ -124,9 +139,17 @@ gallery.control = null;
 					});	
 		},
 		
+		_stopHidingNav : function() {
+			this._nav.stop(true, true);
+			clearTimeout(this._hideNavTimeoutID);
+		},
+		
 		// Show nav for 5 seconds after moving mouse
 		_showNav : function(isAutoHide) {
-			this._nav.stop(true, true);
+			
+			this._stopHidingNav();
+			
+			this._selector.toggleClass("hidden", false, 100);
 			this._nav.slideDown("slow", function(){
 				$(this).css("display", "block");
 				if(isAutoHide)
@@ -135,10 +158,26 @@ gallery.control = null;
 		},
 		
 		// Hide nav
-		_hideNav : function() {
-			this._nav.delay(5000).slideUp("slow", function(){
-				$(this).css("display", "none");
-			});
+		_hideNav : function(isZoomingOut) {
+			this._hideNavTimeoutID = setTimeout(function() {
+				control._selector.toggleClass("hidden", true, isZoomingOut ? 0 : 100);
+				control._nav.slideUp("slow", function(){
+					$(this).css("display", "none");
+				});
+			}, isZoomingOut ? 0 : 5000);
+		},
+		
+		// Shift nav selector
+		_shiftNav : function(col, row) {
+			// Calculate shift for Nav
+			var leftShift = this._currentMediumIndNav - col;
+			var topShift =  this._currentProjectIndNav - row;	
+
+			// Shift the selector
+			this._selector.shift(-leftShift, -topShift, 19, 25, 3000);
+			
+			this._currentMediumIndNav = col;
+			this._currentProjectIndNav = row;
 		},
 		
 		// Open project
@@ -153,18 +192,15 @@ gallery.control = null;
 					project.zoomIn(project.order);
 				});			
 			}
-
-			// Calculate shift for Nav
-			var leftShiftNav = this._currentMediumIndNav - onProject.medium;
-			var topShiftNav =  this._currentProjectIndNav - onProject.order;	
 			
+			// Shift nav selector
+			this._shiftNav(onProject.medium, onProject.order);
+			this._stopHidingNav();
+
 			// Show nav after 2.5 seconds
 			setTimeout(function(){
 				control._showNav(true);
 			}, 2500);
-						
-			// Shift the selector
-			this._selector.shift(-leftShiftNav, -topShiftNav, 19.5, 33, 3000)
 
 			// Calculate shift for Project
 			var leftShift = this._currentMediumInd - onProject.medium;
@@ -179,9 +215,6 @@ gallery.control = null;
 
 			this._currentMediumInd = onProject.medium;
 			this._currentProjectInd = onProject.order;
-			this._currentMediumIndNav = onProject.medium;
-			this._currentProjectIndNav = onProject.order;
-
 			this._currentProject = onProject;
 
 			this.isZoomedOut = false;

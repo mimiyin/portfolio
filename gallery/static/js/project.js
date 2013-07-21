@@ -43,7 +43,7 @@ gallery.project = null;
 				var vimeoEl = $(player).find("iframe.vimeo");
 				id = vimeoEl.attr("id");
 				var vimeoPlayer = vimeos[id];
-				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer, vimeoEl.parents("li[type=vimeo]"));
+				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);
 				thisProject._vimeos.push(vimeoEl);
 				break;
 			}

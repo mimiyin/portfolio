@@ -7,6 +7,10 @@
 		};
 
 	$.fn.shift = function(leftShift, topShift, leftShiftMult, topShiftMult, speed, callback) {
+		
+		if(leftShift == 0 && topShift == 0)
+			return;
+
 		this.animate({
 			left : "+=" + leftShift * leftShiftMult + "%",
 			top :  "+=" + topShift * topShiftMult + "%",

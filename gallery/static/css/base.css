@@ -63,15 +63,6 @@ li {
 	padding: 0;
 }
 
-#scrim {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	opacity: 0;
-}
-
 /* GALLERY */
 
 
@@ -255,19 +246,25 @@ span.project-tagline {
 	cursor: pointer;
 }
 
-#nav #selector {
+#nav-wrapper #selector {
 	position: absolute;
+	top: 13%;
+	left: 78%;
 	margin-top: -2px;
 	margin-left: -5px;
 	width: 18%;
 	height: 27%;
 	border: 2px solid white;
 	background: transparent;
-	display: none;
 }
 
-.win #nav #selector {
+.win #nav-wrapper #selector {
 	margin-top: 0;
+}
+
+#nav-wrapper #selector.hidden {
+	height: 0;
+	border: none;
 }
 
 /* LOGO */

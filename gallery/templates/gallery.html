@@ -7,7 +7,6 @@
 
 
 <div id="gallery">
-	<div id="scrim"></div>
 	{% for m, medium in media.items %}
 		<div id="medium-{{m}}" class="medium">
 			{% for project in medium %}
@@ -39,8 +38,6 @@ $(window).load(function(){
 	$("body").animate({ opacity : 1}, 1000);
 });
 var init = function() {
-	$(document).click(function(){ console.log("CLICKING"); });
-	$(".project").mouseenter(function(){ console.log("MOUSING OVER: " + $(this).attr("id")); });
 	$(window).blur(function(){ console.log("CLICKING ON IFRAME!!!"); });
 	
 	Processing.logger = console;
@@ -79,7 +76,6 @@ var init = function() {
 }
 </script>
 
-{% include "nav.html" %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/utils.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/players.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/carousel.js"></script>{% endaddtoblock %}
@@ -90,7 +86,7 @@ var init = function() {
 	<div id="windows" class="alert">Best viewed in Chrome, Firefox or Safari.</div>
 <![endif]-->
 <!--[if !IE]> -->
-	<div class="alert"><span>&deg;</span> best viewed with sound <span>&deg;</span> </div>
+	<div class="alert"><span>&deg;</span> Turn on your sound, please. <span>&deg;</span> </div>
 	<script type="text/javascript">
 		$(".alert").delay(10000).slideUp("slow");
 		$(document).ready(init);
