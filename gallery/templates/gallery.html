@@ -38,7 +38,13 @@ $(window).load(function(){
 	$("body").animate({ opacity : 1}, 1000);
 });
 var init = function() {
-	$(window).blur(function(){ console.log("CLICKING ON IFRAME!!!"); });
+	/* HACK FOR ADDING MARGIN TO SAFARI NAV SELECTOR */
+	function isSafari() {
+		  var is_safari = navigator.userAgent.toLowerCase().indexOf('safari/') > -1;
+		  return is_safari;
+		}	
+	if(isSafari())
+		$("#nav-wrapper #selector").css("margin-top", "4%");
 	
 	Processing.logger = console;
 	var media = {{media.items | jsonify }};

@@ -172,7 +172,7 @@ gallery.control = null;
 			// Calculate shift for Nav
 			var leftShift = this._currentMediumIndNav - col;
 			var topShift =  this._currentProjectIndNav - row;	
-
+						
 			// Shift the selector
 			this._selector.shift(-leftShift, -topShift, 19, 25, 3000);
 			
@@ -210,7 +210,7 @@ gallery.control = null;
 			// Close all others
 			$.each(this._projects, function(p, project){
 				// x-shift, y-shift, isSelected
-				project.shift(leftShift, topShift, project.code == onProject.code);
+				project.shift(leftShift, topShift, project.code == onProject.code, control.isZoomedOut);
 			});			
 
 			this._currentMediumInd = onProject.medium;

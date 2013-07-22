@@ -47,6 +47,7 @@ gallery.project = null;
 				thisProject._vimeos.push(vimeoEl);
 				break;
 			}
+			
 		});	
 		// Wire up the carousel
 		thisProject._carousel = new Carousel($(thisProject.div.find("ul.carousel")), {
@@ -95,9 +96,11 @@ gallery.project = null;
 	// Shift all projects
 	// Start the project if we are going to this project
 	// Only stop project if we are leaving this project
-	Project.prototype.shift = function(leftShift, topShift, isPlaying) {
+	Project.prototype.shift = function(leftShift, topShift, isPlaying, isZoomingIn) {
 		var thisProject = this;
 		var callback;
+		
+		var duration = isZoomingIn ? 0 : ( isPlaying ? 1000 : 500 ); 
 		
 		if(isPlaying)
 			//I have to stop it first, otherwise, there will be interfering
@@ -106,7 +109,7 @@ gallery.project = null;
 		else if(this._isPlaying)
 			callback = function() { thisProject.stop(); };	
 
-		this.div.shift(leftShift, topShift, 100, 100, isPlaying ? 1000 : 500, callback);
+		this.div.shift(leftShift, topShift, 100, 100, duration, callback);
 		
 	}
 	
@@ -115,6 +118,7 @@ gallery.project = null;
 	Project.prototype.zoomIn = function(row) {
 		this.div.css("top", row*100 + "%");
 		this.div.height($(window).height());
+		this.resizeMedia();
 		this._carousel.middleAlignMedia();
 	}
 		
@@ -149,17 +153,24 @@ gallery.project = null;
 		
 		// Scale this project's videos and stills in the same way
 		var scaleToAlwaysFull = function(media) {
-			$.each(media, function(m, medium){
-				medium = $(medium);
-				if(thisProject.div.width() < thisProject.div.height()*1.77) {
-					medium.height(thisProject.div.height());
-					medium.width(medium.height()*1.78);
-					medium.css("margin-left", -(medium.width()-thisProject.div.width())/2);
+			$.each(media, function(i, item){
+				var it = $(item);
+				// Setting the ratio for the first time
+				var setRatio = function() {
+					var r = (it.attr("width") || it.width()) / (it.attr("height") || it.height());
+					it.attr("width-height-ratio", r);
+					return it.attr("width-height-ratio");
+				}
+				var ratio = it.attr("width-height-ratio") || setRatio();
+				if(thisProject.div.width() < thisProject.div.height()*ratio) {
+					it.height(thisProject.div.height());
+					it.width(it.height()*ratio);
+					it.css("margin-left", -(it.width()-thisProject.div.width())/2);
 				}
 				else {
-					medium.width("100%");
-					medium.height(medium.width()*.562);
-					medium.css("margin-left", 0);
+					it.width("100%");
+					it.height(it.width()*(1/ratio));
+					it.css("margin-left", 0);
 					}
 				});				
 		}
@@ -180,10 +191,7 @@ gallery.project = null;
 
 		this.div.width(newWidth);
 		this.div.height(newHeight);
-		this.div.css("font-size", $(window).width()*$(window).height()*.0000015 + "em");
-		this.resizeMedia();
-		
-		this._carousel.middleAlignMedia();
+		this.div.css("font-size", $(window).width()*$(window).height()*.0000015 + "em");		
 		}
 		
 	gallery.project = Project;
