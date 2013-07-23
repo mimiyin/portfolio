@@ -1,7 +1,25 @@
-{% load sekizai_tags %}
+<!-- {% load sekizai_tags %}
 
 <li type="vimeo" class="live featured player" alt="Flur">
 <iframe id="bach_mov" src="http://player.vimeo.com/video/70277837?api=1;&loop=1;&player_id=bach_mov" class="media vimeo" width="800" height="450" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></li>			
  
 </ul>
+ -->
+ 
+{% load sekizai_tags %}
 
+<!--[if lt IE 9]>
+	<script type="text/javascript">alert("Your browser does not support running live Processing drawings.");</script>
+<![endif]-->
+
+
+<li type="sketch" class="live player featured" alt="Flur">
+		<canvas id="bach" data-processing-sources="{{STATIC_URL}}sketches/bach.pde" width="1280" height="768">
+		</canvas>
+		</li>
+</ul>
+
+<script type="text/javascript">
+	var bach = new Audio();
+	bach.setAttribute("src","{{STATIC_URL}}audio/bach.mp3");	
+</script>
