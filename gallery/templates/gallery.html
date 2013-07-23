@@ -40,7 +40,7 @@ $(window).load(function(){
 var init = function() {
 	/* HACK FOR ADDING MARGIN TO SAFARI NAV SELECTOR */
 	function isSafari() {
-	  return false;
+	  return $('html').hasClass("safari");
 		}	
 	if(isSafari())
 		$("#nav-wrapper #selector").css("margin-top", "4%");
@@ -91,7 +91,7 @@ var init = function() {
 	<div id="windows" class="alert">Best viewed in Chrome, Firefox or Safari.</div>
 <![endif]-->
 <!--[if !IE]> -->
-	<div class="alert"><span>&deg;</span> Turn on your sound, please. <span>&deg;</span> </div>
+	<div class="alert"><span>&deg;</span> Turn your sound on, please. <span>&deg;</span> </div>
 	<script type="text/javascript">
 		$(".alert").delay(10000).slideUp("slow");
 		$(document).ready(init);
