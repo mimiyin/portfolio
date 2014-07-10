@@ -1,20 +1,20 @@
 <div id="nav-wrapper">
 	<ul id="nav">
-	{% for m, medium in media.items %}
-			<ul id="nav-for-medium-{{m}}" class="nav-medium">
-				{% for project in medium %}
-					{% with project.code|add:".html" as template %}
-						<li id="nav-for-{{project.code}}" class="nav-project nav-col-{{project.medium}} nav-row-{{project.order}}"> 
-							{{project.title}}
-						</li>
-					{% endwith %}
-				{% endfor %}		
-			</ul>
+		{% for m, medium in media.items %}
+		<ul id="nav-for-medium-{{m}}" class="nav-medium">
+			{% for project in medium %}
+				{% with project.code|add:".html" as template %}
+					<li code="{{project.code}}" id="nav-for-{{project.code}}" class="nav-project nav-col-{{project.medium}} nav-row-{{project.order}}"> 
+						{{project.title}}
+					</li>
+				{% endwith %}
+			{% endfor %}		
+		</ul>
 		{% endfor %}
 		<ul id="nav-extras" class="nav-medium">
 			<li id="zoom-out">Zoom out</li>
-			<li id="magic-eight-ball">Magic 8 ball</li>
+			<li id="random">Magic 8 ball</li>
 		</ul>
 	</ul>
-	<div id="selector" class="hidden"></div>
+	<div id="selector"></div>
 </div>	

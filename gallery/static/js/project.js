@@ -5,63 +5,61 @@ gallery.project = null;
 	var Carousel = gallery.carousel;
 	var SketchPlayer = gallery.sketchPlayer;
 	var VimeoPlayer = gallery.vimeoPlayer;
-	
-	var Project = function Project(project, heightFactor) {
+
+	var Project = function Project(project) {
 		this.code = project.code;
 		this.medium = project.medium;
 		this.order = project.order;
-		this._heightFactor = heightFactor;
-		this.navItem = $("#nav-for-" + this.code);
-		this.div = $("#" + this.code);
+		this._element = $("#" + this.code);
 
-		var thisProject = this;		
+		var self = this;		
 
 		// Find videos and sketches
 		this._players = {};	
 		// Find images
-		this._stills = this.div.find("li[type=still] img");
+		this._stills = this._element.find("li[type=still] img");
 		// Find flickrs
-		this._flickrs = this.div.find("li[type=flickr] embed");
+		this._flickrs = this._element.find("li[type=flickr] embed");
 		// Find videos
 		this._vimeos = [];
 		// Keep track of sketches for height resizing
 		this._sketches = [];
-		
-		
-		
-		$.each(this.div.find($("li.player")), function(p, player){
+				
+		// Wire up the players
+		$.each(this._element.find($("li.player")), function(p, player){
 			var type = $(player).attr("type");
 			var id;
 			switch(type) {
 			case "sketch":
 				id = $(player).find("canvas").attr("id");
 				var instance = Processing.getInstanceById(id);
-				thisProject._players[id] = new SketchPlayer(id, instance);
-				thisProject._sketches.push(instance);
+				self._players[id] = new SketchPlayer(id, instance);
+				self._sketches.push(instance);
 				break;
 			case "vimeo":
 				var vimeoEl = $(player).find("iframe.vimeo");
 				id = vimeoEl.attr("id");
 				var vimeoPlayer = vimeos[id];
-				thisProject._players[id] = new VimeoPlayer(id, vimeoPlayer);
-				thisProject._vimeos.push(vimeoEl);
+				self._players[id] = new VimeoPlayer(id, vimeoPlayer);
+				self._vimeos.push(vimeoEl);
 				break;
 			}
 			
 		});	
+
 		// Wire up the carousel
-		thisProject._carousel = new Carousel($(thisProject.div.find("ul.carousel")), {
+		self._carousel = new Carousel($(self._element.find("ul.carousel")), {
 			onSlideStop : function(slide) {
 		    	if(slide.hasClass("player")) {
 			    	var id = $(slide.children()[0]).attr("id");
-			    	thisProject._players[id].pause();
+			    	self._players[id].pause();
 			    	}				
 			},
 		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
 		    	// Only play featured movies if we're zoomed out
-		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || ((slide.hasClass("featured") && Math.random() > .67)))) {		    	
+		    	if(slide.hasClass("player") && (!control.isZoomedOut || ((slide.hasClass("featured") && Math.random() > .67)))) {		    	
 			    	var id = $(slide.children()[0]).attr("id");
-			    	thisProject._players[id].play(callback || null);
+			    	self._players[id].play(callback || null);
 			    	}
 		    	else
 		    		if(callback) callback();
@@ -69,12 +67,15 @@ gallery.project = null;
 		    onSlideBefore: function (slide, oldIndex, newIndex){
 		    	if(slide.hasClass("player")) {
 			    	var id = $(slide.children()[0]).attr("id");
-		    		thisProject._players[id].pause();
+		    		self._players[id].pause();
 		    		}
 		    	},
-		}) || null;			
+		}) || null;	
+
+		// Emit click
+		this._element.click(function(){ $(self).trigger('click', self.code) });
 	};
-	
+
 	// Make the carousel go from the beginning
 	Project.prototype.start = function() {
 		this._isPlaying = true;
@@ -88,112 +89,49 @@ gallery.project = null;
 	Project.prototype.stop = function() {
 		//console.log("STOPPING: " + this.code);
 		this._isPlaying = false;
-		if(this._carousel) this._carousel.stop();
+		if(this._carousel) {
+			this._carousel.stop();
+		}
 	}
-	
-	
 		
 	// Shift all projects
 	// Start the project if we are going to this project
 	// Only stop project if we are leaving this project
-	Project.prototype.shift = function(leftShift, topShift, isPlaying, isZoomingIn) {
-		var thisProject = this;
+	Project.prototype.shift = function(leftShift, topShift) {
+		var self = this;
 		var callback;
+
+		var duration = control.isZoomedOut ? 0 : 500; 
 		
-		var duration = isZoomingIn ? 0 : ( isPlaying ? 1000 : 500 ); 
-		
-		if(isPlaying)
+		if(this.isZoomedIn) {
 			//I have to stop it first, otherwise, there will be interfering
 			//timed callbacks interfering with playing
-			callback = function() { thisProject.stop(); thisProject.start(); };
-		else if(this._isPlaying)
-			callback = function() { thisProject.stop(); };	
+			callback = function() { self.start(); };
+		}
+		else if(this._isPlaying) {
+			callback = function() { self.stop(); };	
+		}
 
-		this.div.shift(leftShift, topShift, 100, 100, duration, callback);
-		
+		this._element.shift(leftShift, topShift, 100, 100, duration, callback);		
 	}
-	
-	// Re-adjust top offset based on absolute positioning
-	// Which is needed to make the "shift" feature work
-	Project.prototype.zoomIn = function(row) {
-		this.div.css("top", row*100 + "%");
-		this.div.height($(window).height());
-		this.resizeMedia();
-		this._carousel.middleAlignMedia();
-	}
-		
+
 	// Zoom out into gallery map view
 	Project.prototype.zoomOut = function() {
 		this.start();
-		var thisProject = this;
-		this.div.animate({
+		var self = this;
+		this._element.animate({
 			opacity : .1,
 			top : 0,
 			left : 0,
-			height : thisProject._calcZoomedOutHeight(),
+			height : self._calcZoomedOutHeight(),
 			overflow : 'hidden',
 		}, Math.random()*2000 + 500, function() {
 			$(this).fadeTo(Math.random()*10000 + 2500, 1);
-			thisProject.resizeMedia();
-			thisProject._carousel.middleAlignMedia();		
+			self.resizeMedia();
+			self._carousel.middleAlignMedia();		
 			})
 	}
-	
-	Project.prototype.resizeMedia = function() {
-		var thisProject = this;
-		// Scale this project's Processing sketches
-		$.each(this._sketches, function(s, sketch){
-			var canvas = $(sketch.externals.canvas);
-			var width = canvas.width();
-			var height = canvas.height();
-			var scaleX = thisProject.div.width()/width || 1;
-			var scaleY = thisProject.div.height()/height || 1;
-			sketch.resize(scaleX, scaleY);
-			});	
-		
-		// Scale this project's videos and stills in the same way
-		var scaleToAlwaysFull = function(media) {
-			$.each(media, function(i, item){
-				var it = $(item);
-				// Setting the ratio for the first time
-				var setRatio = function() {
-					var r = (it.attr("width") || it.width()) / (it.attr("height") || it.height());
-					it.attr("width-height-ratio", r);
-					return it.attr("width-height-ratio");
-				}
-				var ratio = it.attr("width-height-ratio") || setRatio();
-				if(thisProject.div.width() < thisProject.div.height()*ratio) {
-					it.height(thisProject.div.height());
-					it.width(it.height()*ratio);
-					it.css("margin-left", -(it.width()-thisProject.div.width())/2);
-				}
-				else {
-					it.width("100%");
-					it.height(it.width()*(1/ratio));
-					it.css("margin-left", 0);
-					}
-				});				
-		}
-		
-		scaleToAlwaysFull(this._stills);
-		scaleToAlwaysFull(this._vimeos);
-	}
-	
-	Project.prototype._calcZoomedOutHeight = function() {
-		return $(window).height()*this._heightFactor;
-	}
-	
-	// Make project div the size of the window
-	Project.prototype.fitToWindow = function() {
-		var newWidth = $(window).width();
-		var newHeight = gallery.control.isZoomedOut ? this._calcZoomedOutHeight() : $(window).height();
-		var oldHeight = this.div.height();
 
-		this.div.width(newWidth);
-		this.div.height(newHeight);
-		this.div.css("font-size", $(window).width()*$(window).height()*.0000015 + "em");		
-		}
-		
 	gallery.project = Project;
 
 }());

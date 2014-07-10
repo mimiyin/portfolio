@@ -30,6 +30,7 @@ var audioType = isSafari() ? ".mp3" : ".ogg";
 								<span class="project-music">{{project.music}}</span>
 								</li>
 							{% include template %}
+						</ul>
 					</div>
 				{% endwith %}
 			{% endfor %}		
@@ -38,54 +39,54 @@ var audioType = isSafari() ? ".mp3" : ".ogg";
 </div>
 
 <script type="text/javascript">
-$(window).load(function(){
-	$("body").animate({ opacity : 1}, 1000);
-});
+	$(window).load(function(){
+		$("body").animate({ opacity : 1}, 1000);
+	});
 
-var vimeos = {};
-var mediaCount = 0;
+	var vimeos = {};
+	var mediaCount = 0;
 
-var init = function() {
-	
-	/* HACK FOR ADDING MARGIN TO SAFARI NAV SELECTOR */
-	if(isSafari()) {
-		$("#nav-wrapper #selector").css("margin-top", "4%");
-	}
-	
-	Processing.logger = console;
-	var media = {{media.items | jsonify }};
-	// Catching the ready event early enough
-	var vimeoIframes = $("#gallery").find("li[type=vimeo] iframe");
-	var flickrIframes = $("#gallery").find("li[type=flickr] iframe");
-	var stills = $("#gallery").find("li[type=still] img");
-	
-	var totalMedia = vimeoIframes.length + flickrIframes.length + stills.length;
-	
-	$.each(vimeoIframes, function(v, vimeo){
-		$f(vimeo).addEvent("ready", function(player_id){
-			mediaCount++;
-			vimeos[player_id] = $f(player_id);
- 			if(mediaCount == totalMedia)
-				setTimeout(function(){ gallery.control.init(media); }, 1000);
+	var init = function() {
+		
+		/* HACK FOR ADDING MARGIN TO SAFARI NAV SELECTOR */
+		if(isSafari()) {
+			$("#nav-wrapper #selector").css("margin-top", "4%");
+		}
+		
+		Processing.logger = console;
+		var media = {{media.items | jsonify }};
+		// Catching the ready event early enough
+		var vimeoIframes = $("#gallery").find("li[type=vimeo] iframe");
+		var flickrIframes = $("#gallery").find("li[type=flickr] iframe");
+		var stills = $("#gallery").find("li[type=still] img");
+		
+		var totalMedia = vimeoIframes.length + flickrIframes.length + stills.length;
+		
+		$.each(vimeoIframes, function(v, vimeo){
+			$f(vimeo).addEvent("ready", function(player_id){
+				mediaCount++;
+				vimeos[player_id] = $f(player_id);
+	 			if(mediaCount == totalMedia)
+					setTimeout(function(){ gallery.control.init(media); }, 1000);
+				});
+		});
+		
+		$.each(flickrIframes, function(f, flickr) {
+			flickr.load(function(){
+				mediaCount++;
+				if(mediaCount == totalMedia)
+					setTimeout(function(){ gallery.control.init(media); }, 1000);
 			});
-	});
-	
-	$.each(flickrIframes, function(f, flickr) {
-		flickr.load(function(){
-			mediaCount++;
-			if(mediaCount == totalMedia)
-				setTimeout(function(){ gallery.control.init(media); }, 1000);
 		});
-	});
-	
-	$.each(stills, function(s, still) {
-		$(still).load(function(){
-			mediaCount++;
-			if(mediaCount == totalMedia)
-				setTimeout(function(){ gallery.control.init(media); }, 1000);
+		
+		$.each(stills, function(s, still) {
+			$(still).load(function(){
+				mediaCount++;
+				if(mediaCount == totalMedia)
+					setTimeout(function(){ gallery.control.init(media); }, 1000);
+			});
 		});
-	});
-}
+	}
 </script>
 
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/utils.js"></script>{% endaddtoblock %}

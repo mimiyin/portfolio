@@ -11,7 +11,7 @@ gallery.sketchPlayer = null;
 		try { 
 			this._audio = this.sketch.getAudio(); 
 			this._audio.addEventListener('ended', function(){
-				//console.log("ENDED!");
+				console.log("AUDIO ENDED!");
 				thisSP._audio.currentTime = 0;
 				thisSP.sketch.reset();
 			})
@@ -19,7 +19,7 @@ gallery.sketchPlayer = null;
 			} 
 		catch(e) {
 			this._hasAudio = false;
-			//console.log(this.id + " has no audio."); 
+			console.log(this.id + " has no audio."); 
 			} ;
 						
 		// Pause it right out of the gate
@@ -160,8 +160,9 @@ gallery.vimeoPlayer = null;
 		if(!gallery.control.isZoomedOut) {
 			this._turnUp();
 			// Move to next slide when video is finished playing
-			if(callback) 
+			if(callback){ 
 				this._callback = callback;
+			}
 		}
 	}
 	
