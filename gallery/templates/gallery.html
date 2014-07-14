@@ -48,11 +48,7 @@ var audioType = isSafari() ? ".mp3" : ".ogg";
 
 	var init = function() {
 		
-		/* HACK FOR ADDING MARGIN TO SAFARI NAV SELECTOR */
-		if(isSafari()) {
-			$("#nav-wrapper #selector").css("margin-top", "4%");
-		}
-		
+		/* HACK FOR ADDING MARGIN TO SAFARI NAV SELECTOR */		
 		Processing.logger = console;
 		var media = {{media.items | jsonify }};
 		// Catching the ready event early enough
@@ -92,6 +88,7 @@ var audioType = isSafari() ? ".mp3" : ".ogg";
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/utils.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/players.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/carousel.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/nav.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/project.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/control.js"></script>{% endaddtoblock %}
 

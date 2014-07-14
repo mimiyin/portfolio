@@ -44,13 +44,11 @@ gallery.sketchPlayer = null;
 	SketchPlayer.prototype.play = function(callback) {
 		//console.log("PLAYING!!! " + this.id);
 		this.sketch.loop();
-		if(!gallery.control.isZoomedOut) {
-			// Turn up the volume if there's audio
-			if(this._hasAudio)
-				this._turnUp();	
-			// Move to next slide
-			if(callback) this._callback = callback();
-		}
+		// Turn up the volume if there's audio
+		if(this._hasAudio)
+			this._turnUp();	
+		// Move to next slide
+		if(callback) this._callback = callback();
 	}
 	
 	SketchPlayer.prototype._reset = function() { 
@@ -157,12 +155,10 @@ gallery.vimeoPlayer = null;
 		this._video.api("play");
 		this._isPlaying = true;
 		
-		if(!gallery.control.isZoomedOut) {
-			this._turnUp();
-			// Move to next slide when video is finished playing
-			if(callback){ 
-				this._callback = callback;
-			}
+		this._turnUp();
+		// Move to next slide when video is finished playing
+		if(callback){ 
+			this._callback = callback;
 		}
 	}
 	

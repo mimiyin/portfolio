@@ -57,7 +57,7 @@ gallery.carousel = null;
 		}
 		
 		var self = this;
-		var isPreview = gallery.control.isZoomedOut == true ? true : false;
+		var isPreview = gallery.control.isZoomedOut == true;
 			
 		var isLastSlide = function() { 
 			return self._nextSlideIndex == self._lastSlideIndex;

@@ -57,7 +57,7 @@ gallery.project = null;
 			},
 		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
 		    	// Only play featured movies if we're zoomed out
-		    	if(slide.hasClass("player") && (!control.isZoomedOut || ((slide.hasClass("featured") && Math.random() > .67)))) {		    	
+		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || ((slide.hasClass("featured") && Math.random() > .67)))) {		    	
 			    	var id = $(slide.children()[0]).attr("id");
 			    	self._players[id].play(callback || null);
 			    	}
@@ -74,6 +74,11 @@ gallery.project = null;
 
 		// Emit click
 		this._element.click(function(){ $(self).trigger('click', self.code) });
+
+		// Listen for zoomIn
+		$(gallery.control).on('zoomIn', function(shift){
+			self.shift(shift.left, shift.top);
+		});
 	};
 
 	// Make the carousel go from the beginning
@@ -101,7 +106,7 @@ gallery.project = null;
 		var self = this;
 		var callback;
 
-		var duration = control.isZoomedOut ? 0 : 500; 
+		var duration = gallery.control.isZoomedOut ? 0 : 500; 
 		
 		if(this.isZoomedIn) {
 			//I have to stop it first, otherwise, there will be interfering
@@ -111,7 +116,7 @@ gallery.project = null;
 		else if(this._isPlaying) {
 			callback = function() { self.stop(); };	
 		}
-
+				
 		this._element.shift(leftShift, topShift, 100, 100, duration, callback);		
 	}
 

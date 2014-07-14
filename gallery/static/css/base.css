@@ -3,8 +3,7 @@ html, body, div, span, p, img {
 	border: 0;
 	margin: 0;
 	padding: 0;
-	vertical-align: baseline;	
-	font-family: "Myriad Pro", "Calibri", "Lucida", sans-serif;
+	font-family: "Calibri", "Lucida", sans-serif;	
 	color: #999;
 }
 
@@ -29,18 +28,15 @@ html, body, div, span, p, img {
 }
 
 canvas {
-	font-family: "Myriad Pro", "Calibri", "Lucida", sans-serif;	
+	font-family: "Calibri", "Lucida", sans-serif;	
 }
 
 body {
 	width: 100%;
 	min-width: 800px;
 	font-size: 14px;
-	background: white;
+	background: #f9f9f9;
 	overflow: hidden;
-	-moz-box-shadow:  inset 0 0 300px rgba(0,0,0,0.33);
-	-webkit-box-shadow:  inset 0 0 300px rgba(0,0,0,0.33);
-	box-shadow:   inset 0 0 300px rgba(0,0,0,0.33);
 	opacity: 0;
 }
 
@@ -49,13 +45,7 @@ img {
 }
 
 ul, ol {
-	-moz-padding-start: 0px;
-	-moz-margin-before: 0px;
-	-moz-margin-after: 0px;
-	
-	-webkit-padding-start: 0px;
-	-webkit-margin-before: 0px;
-	-webkit-margin-after: 0px;
+	padding: 0;
 }
 
 li {
@@ -67,53 +57,54 @@ li {
 
 
 #gallery {
-	width: 400% !important;
+	width: 400%;
 	overflow: hidden;		
+}
+
+#gallery.zoomedOut {
+	transform: scale(.25, .25);
+	-webkit-transform: scale(.25, .25);
+	-ms-transform: scale(.25, .25);
+
+	transform-origin: 0% 0%;
+	-webkit-transform-origin: 0% 0%;
+	-ms-transform-origin: 0% 0%;
 }
 
 .medium {
 	width: 25%;
 	float : left;
-	position: relative;
-	height: inherit;
 }
 
-.medium.preview {
-	position: absolute;
-	top: 0;
-}
-
-.medium.view {
-	transform : none !important;
-	-webkit-transform : none !important;
-	-ms-transform: none !important;
-}
-
-.medium.preview .project {
-	overflow: hidden;
-}
-
-.project {
-	position: absolute;
-	width: 100%;
-	height: 0;
-	overflow: hidden;
-	opacity: 0;
-}
-
-.medium.preview .project {
-	position: relative;	
-	cursor: pointer;
-}
-
-.medium.preview li {
-	pointer-events:	none;
-}
-
-.medium.view li {
+.medium li {
 	pointer-events:	auto;
 }
 
+.project {
+	width: 100%;
+	height: 100vh;
+	overflow: hidden;
+	opacity: 1;
+}
+
+.project li {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.project li.title-slide {
+	justify-content: flex-start;
+}
+
+#gallery.zoomedOut .project {
+	cursor: pointer;
+}
+
+
+#gallery.zoomedOut .project li {
+	pointer-events:	none;
+}
 
 /* CAROUSEL */
 #gallery ul.carousel {

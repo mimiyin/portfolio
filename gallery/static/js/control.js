@@ -5,6 +5,7 @@ gallery.control = null;
 	
 	
 	var utils = gallery.utils;
+
 	var control = {
 		isZoomedOut : true,
 		_currentMediumInd : 0,
@@ -17,9 +18,8 @@ gallery.control = null;
 		_sketches : [],
 		_maxMediaCount : 0,
 		init : function(media) {
-			this._stupidBrowser = window.chrome;
-			
-			this._gallery = $('#gallery');
+
+			this._element = $('#gallery');
 			this._sketches = $.extend([], Processing.instances);
 			
 			// Iterate through all the projects
@@ -32,14 +32,14 @@ gallery.control = null;
 					control._projects[project.code] = p;
 					
 					// Listen for nav clicks to zoon in on selected project
-					$(p).on('clicked', function(){
+					$(p).on('click', function(){
 						control._zoomIn(p);
 					});
 				});
 			});	
 
 			// Create nav item
-			this._nav = new gallery.nav($('#nav'));
+			this._nav = $(gallery.nav.init($('#nav')));
 
 			// Zoom in project
 			this._nav.on('click', function(p){
@@ -75,7 +75,7 @@ gallery.control = null;
 		// Gallery Map
 		_zoomOut : function() {
 			//console.log("ZOOMING OUT");
-			$(body).toggleClass("zoomedOut", true, "slow");
+			this._element.toggleClass("zoomedOut", true, "slow");
 
 			// Reset what's "current"
 			this._currentProject = null;
@@ -86,7 +86,7 @@ gallery.control = null;
 			control.isZoomedOut = true;
 
 			// Tell everyone we've zoomed out
-			$(this).emit('zoomOut');
+			$(this).trigger('zoomOut');
 		},
 
 		// Open project
@@ -104,13 +104,16 @@ gallery.control = null;
 
 			// Toggle class if changing class
 			if(control.isZoomedOut) {
-				$(body).toggleClass("zoomedOut", false, "slow");
+				this._element.toggleClass("zoomedOut", false, "slow");
 			}
 
 			// Calculate shift for Project
 			var leftShift = this._currentMediumInd - zoomProject.medium;
 			var topShift =  this._currentProjectInd - zoomProject.order;
-						
+					
+			// Emit zoom in event 
+			$(this).trigger('zoomIn', { left: leftShift, top: topShift });
+
 			// Update what's current
 			this._currentMediumInd = zoomProject.medium;
 			this._currentProjectInd = zoomProject.order;
@@ -118,7 +121,7 @@ gallery.control = null;
 			this.isZoomedOut = false;
 
 			// Emit shift event
-			$(this).emit('shift', { top : topShift, left : leftShift});
+			$(this).trigger('shift', { top : topShift, left : leftShift});
 		}				
 	}	
 	
