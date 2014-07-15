@@ -7,88 +7,73 @@ gallery.control = null;
 	var utils = gallery.utils;
 
 	var control = {
-		isZoomedOut : true,
-		_currentMediumInd : 0,
-		_currentProjectInd : 0,
-		_currentMediumIndNav : 4,
-		_currentProjectIndNav : 0,
-		_currentProject : null,
-		_media : [],	
-		_projects : {},
-		_sketches : [],
-		_maxMediaCount : 0,
+		projects : {},
 		init : function(media) {
-
-			this._element = $('#gallery');
-			this._sketches = $.extend([], Processing.instances);
+			this.element = $('#gallery');
 			
 			// Iterate through all the projects
 			// Create a project object for each
 			$.each(media, function(m, med){		
-				control._media.push([]);
-				$.each(med, function(p, project){
-					var p = new gallery.project(project);
-					control._media[m].push(p);
-					control._projects[project.code] = p;
+				$.each(med, function(p, proj){
+					var project = control.element.find("#" + proj.code).project({
+						code : proj.code,
+						medium : proj.medium,
+						order : proj.order,
+					}).data("doc-project");
+
+					control.projects[proj.code] = project;
+
+					// First project
+					if(m == 0 && p == 0) {
+						control.currentProject = project;
+					}
 				});
 			});	
 
 			// Initiate nav
-			this._nav = gallery.nav.init($("#nav-wrapper"));
-
-			// Move to a specific project
-			$(this._nav).on("move", function(event, code){
-				control._move(control._getProject(code));
+			this.nav = $("#nav-wrapper").nav({
+				selected : function(event, ui) {
+					var code = ui;
+					control._move($this._getProject(code));
+				}
 			});
 
-			// Get random project
-			$(this._nav).on("random", function(){
-				control._move(control._getRandomProject());
-			});
-
-			this.currentProject = this._getProject('multiverse');
-
-			// Start out zoomed out
-			this._move(this._getProject('beluga'));			
+			// Start out with about
+			this._move(control._getProject("about"));			
 		},
 
-		// Get specific project
 		_getProject : function(code) {
-			return this._projects[code];
-		},
-
-		// Get random project
-		_getRandomProject : function() {
-			var randomProject = utils.getRandom(control._projects);
-			if(randomProject.code == control._currentProject.code)
-				control.getRandomProject();
-			else {
-				return randomProject;
-			}
+			return this.projects[code];
 		},
 
 		// Open project
 		_move : function(project) {
-			console.log("MOVING TO: " + project.code);
+			console.log("MOVING TO: " + project.options.code);
 
-			if(this.currentProject.code == project.code) {
+			if(this.currentProject.options.code == project.options.code) {
 				return;
 			}
 
 			// Calculate shift for Project
-			var leftShift = this.currentProject.medium - project.medium;
-			var topShift =  this.currentProject.order - project.order;
+			var leftShift = (this.currentProject.options.medium || 0) - project.medium;
+			var topShift =  (this.currentProject.options.order || 0) - project.order;
 
 			// Update current project
 			this.currentProject = project;
 
-			console.log("SHIFT", leftShift, topShift);
-					
 			// Move the entire gallery
-			this._element.shift(leftShift, topShift, 100, 100, 'vh', 2500);
+			this.element.shift(leftShift, topShift, 100, 100, 'vh', 2500);
 
-			// Emit zoom in event 
-			$(this).trigger('move', { left : leftShift, top: topShift });
+			// Deselect the other projects
+			$.each(this.projects, function(p, proj) {
+				if(p == project.code) {
+					// Select the project
+					project.select();					
+				}
+				else {
+					project.deselect();
+				}
+			});
 		}				
 	}	
 	

@@ -37,7 +37,6 @@ body {
 	font-size: 14px;
 	background: #f9f9f9;
 	overflow: hidden;
-	opacity: 0;
 }
 
 img {
@@ -161,20 +160,6 @@ span.project-tagline {
 
 #nav ul li {
 	cursor: pointer;
-}
-
-#nav-wrapper #selector {
-	position: absolute;
-	margin: 4px -10px;
-	width: 18%;
-	height: 27%;
-	border: 2px solid white;
-	background: transparent;
-}
-
-#nav-wrapper #selector.hidden {
-	height: 0;
-	border: none;
 }
 
 /* LOGO */

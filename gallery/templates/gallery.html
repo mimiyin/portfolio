@@ -9,18 +9,9 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.lazyloadxt.extra.min.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.fitvids.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.bxslider.min.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.players.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/processing.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/froogaloop.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-plus.js"></script>{% endaddtoblock %}
-
-<script type="text/javascript">
-function isSafari() {
-	  return $('html').hasClass("safari");
-		}
-var audioType = isSafari() ? ".mp3" : ".ogg";
-
-</script>
 
 <div id="gallery">
 	{% for m, medium in media.items %}
@@ -29,15 +20,6 @@ var audioType = isSafari() ? ".mp3" : ".ogg";
 				{% with project.code|add:".html" as template %}
 					<div id="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
 						<ul class="carousel"> 
-							<li type="title" class="title-slide" alt="Intro">
-								<span class="project-title">{{project.title}}. </span>
-								<span class="project-tagline">{{project.tagline}}</span>
-								<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
-								<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
-								<span class="project-description">{{project.description}}</span>
-								<span class="project-materials">{{project.materials}}</span>
-								<span class="project-music">{{project.music}}</span>
-								</li>
 							{% include template %}
 						</ul>
 					</div>
@@ -47,58 +29,10 @@ var audioType = isSafari() ? ".mp3" : ".ogg";
 	{% endfor %}
 </div>
 
-<script type="text/javascript">
-	$(window).load(function(){
-		$("body").animate({ opacity : 1}, 1000);
-	});
-
-	var vimeos = {};
-	var mediaCount = 0;
-
-	var init = function() {
-		
-		/* HACK FOR ADDING MARGIN TO SAFARI NAV SELECTOR */		
-		Processing.logger = console;
-		var media = {{media.items | jsonify }};
-		// Catching the ready event early enough
-		var vimeoIframes = $("#gallery").find("li[type=vimeo] iframe");
-		var flickrIframes = $("#gallery").find("li[type=flickr] iframe");
-		var stills = $("#gallery").find("li[type=still] img");
-		
-		var totalMedia = vimeoIframes.length + flickrIframes.length + stills.length;
-		
-		$.each(vimeoIframes, function(v, vimeo){
-			$f(vimeo).addEvent("ready", function(player_id){
-				mediaCount++;
-				vimeos[player_id] = $f(player_id);
-	 			if(mediaCount == totalMedia)
-					setTimeout(function(){ gallery.control.init(media); }, 1000);
-				});
-		});
-		
-		$.each(flickrIframes, function(f, flickr) {
-			flickr.load(function(){
-				mediaCount++;
-				if(mediaCount == totalMedia)
-					setTimeout(function(){ gallery.control.init(media); }, 1000);
-			});
-		});
-		
-		$.each(stills, function(s, still) {
-			$(still).load(function(){
-				mediaCount++;
-				if(mediaCount == totalMedia)
-					setTimeout(function(){ gallery.control.init(media); }, 1000);
-			});
-		});
-	}
-</script>
-
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/utils.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/players.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/carousel.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/nav.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/project.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/jquery.players.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/jquery.nav.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/jquery.project.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/control.js"></script>{% endaddtoblock %}
 
 <!--[if IE]>
@@ -108,6 +42,10 @@ var audioType = isSafari() ? ".mp3" : ".ogg";
 	<div class="alert"><span>&deg;</span> Turn your sound on, please. <span>&deg;</span> </div>
 	<script type="text/javascript">
 		$(".alert").delay(10000).slideUp("slow");
-		$(document).ready(init);
+		$(window).load(function(){
+			Processing.logger = console;
+			var media = {{media.items | jsonify }};
+			gallery.control.init(media);
+		});
 		</script>
 <!-- <![endif]-->

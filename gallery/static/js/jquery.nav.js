@@ -1,57 +1,59 @@
-$.widget('doc.navitem', {
+$.widget('doc.nav', {
 	options : {
-		onSelected : null,
+		selected : null,
 	},
 	_create : function() {
+		var $this = this;
 		this.element.addClass("doc_nav");
-		this.id = this.element.attr("code");
+	},
+	_init : function() {
+		var $this = this;
+		this.navitems = [];
+		var navitem = this.element.find("li.navitem").navitem({
+			selected : function(event, ui) {
+				console.log($(event.target).attr('code'));
+				// // deselect all nav items
+				// $this.navitems('deselect');
+				// // tell control what's been selected
+				$this._trigger('selected');
+			}
+		});
+	}
+});
+
+$.widget('doc.navitem', {
+	options : {
+		selected : null,
+	},
+	_create : function() {
+		var $this = this;
+		this.element.addClass("doc_navitem");
 		this._on({
 			"click" : $this._select,
-			"mouseenter" : $this._enter,
-			"mouseleave" : $this._leave,
-		})
+			"mouseenter" : $this.enter,
+			"mouseleave" : $this.leave,
+		});
 	},
 	_init : function() {
 		this.carousel = this.element.find(".carousel").bxSlider({
 			auto: false,
 			speed: 500,
 		});
-
 	},
 	_select : function() {
 		this._trigger('selected');
+		this.element.toggleClass("doc_selected", true, "slow");
+	},
+	deselect : function() {
+		this.element.toggleClass("doc_selected", false, "fast");
 	},
 	enter : function() {
-		this.carousel.bxSlider('auto', true);
+		this.carousel.show();
+		this.carousel.startAuto();
 	},
 	leave : function() {
-		this.carousel.goToSlide(0);
-		this.carousel('auto', false);
+		this.carousel.hide();
+		this.carousel.stopAuto();
 
-	},
-	_turnDown = function(callback) { 
-		var $this = this;
-		while (this.audio.volume > 0 && this.isLeaving) {
-			console.log("TURNING DOWN!!! " + $this.id + "\tVOL: " + $this.audio.volume);
-			if(!this.paused()) {
-				$this._down();
-			} 	
-		}
-		if(callback) {
-			callback();
-		}
-	},
-	_turnUp = function() { 
-		//console.log("TURNING UP!!! " + this.id);
-
-		while (this.audio.volume < .5 && this.isEntering) {
-			console.log("TURNING UP!!! " + $this.id + "\tVOL: " + $this.audio.volume);
-			if(!this.paused()) {
-				$this._down();
-			}	
-		}
-	},
-	_destroy : function() {
-		this.element.removeClass("doc_nav");
-	}	
+	}
 });

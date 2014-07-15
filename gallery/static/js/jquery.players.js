@@ -43,7 +43,7 @@ $.widget('doc.player', {
 			this.pause();
 		}
 	},
-	_turnDown = function(callback) { 
+	_turnDown : function(callback) { 
 		var $this = this;
 		while (this.audio.volume > 0 && this.isLeaving) {
 			console.log("TURNING DOWN!!! " + $this.id + "\tVOL: " + $this.audio.volume);
@@ -55,7 +55,7 @@ $.widget('doc.player', {
 			callback();
 		}
 	},
-	_turnUp = function() { 
+	_turnUp : function() { 
 		//console.log("TURNING UP!!! " + this.id);
 
 		while (this.audio.volume < .5 && this.isEntering) {
@@ -64,22 +64,18 @@ $.widget('doc.player', {
 				$this._down();
 			}	
 		}
-	},
-	_destroy : function() {
-		this.element.removeClass("doc_player");
-	}	
+	}
 });
 
 $.widget('doc.sketch', $.doc.player, {
 	options : {
-		sketch : null,
-		audio : null,
 	},
 	_create : function() {
 		var $this = this;
 		this.element.addClass("doc_sketch");
-		this.sketch = this.options.sketch;
-		this.audio = this.options.audio;
+		var id = this.element.find("canvas").attr("id");
+		this.sketch = Processing.getInstanceById(id);
+		this.audio = new Audio(this.element.find("audio"));
 	},
 	_init : function() {
 		this.pause();
@@ -116,22 +112,20 @@ $.widget('doc.sketch', $.doc.player, {
 
 $.widget('doc.vimeo', $.doc.player, {
 	options : {
-		vimeo : null,
 		callback : null,
 	},
 	_create : function() {
 		var $this = this;
 		this.element.addClass("doc_vimeo");
-		this.vimeo = this.options.vimeo;
-		this.audio = this.options.vimeo;
-
-
+		this.vimeo = $f(this.element.find('iframe')[0]);
+		this.audio = this.vimeo;
 	},
 	_init : function() {
 		var $this = this;
+		
 		// Set volume to 0
 		this.vimeo.addEvent("ready", function(){
-			$this.mute();
+			$this._mute();
 		});
 
 		// Listen for finish
@@ -143,7 +137,7 @@ $.widget('doc.vimeo', $.doc.player, {
 		});
 	},
 	play : function() {
-		this.vimeo.api.("play");
+		this.vimeo.api("play");
 	},
 	pause : function() {
 		this.vimeo.api("pause");
@@ -169,8 +163,5 @@ $.widget('doc.vimeo', $.doc.player, {
 	},
 	_mute : function() {
 		this.vimeo.api("setVolume", 0);
-	},
-	_destroy : function() {
-		this.element.removeClass("doc_vimeo");
-	}	
+	}
 });
