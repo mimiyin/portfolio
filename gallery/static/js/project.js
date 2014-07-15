@@ -13,20 +13,9 @@ gallery.project = null;
 		this.medium = project.medium;
 		this.order = project.order;
 		this._element = $("#" + this.code);
-
-		// Find videos and sketches
-		this._players = {};	
-		// Find images
-		this._stills = this._element.find("li[type=still] img");
-		// Find flickrs
-		this._flickrs = this._element.find("li[type=flickr] embed");
-		// Find videos
-		this._vimeos = [];
-		// Keep track of sketches for height resizing
-		this._sketches = [];
 				
 		// Wire up the players
-		$.each(this._element.find($("li.player")), function(p, player){
+		$.each(this._element.find($("li canvas iframe")), function(p, player){
 			var type = $(player).attr("type");
 			var id;
 			switch(type) {
@@ -58,20 +47,16 @@ gallery.project = null;
 			useCSS: false,
 		    onSlideBefore: function (slide, oldIndex, newIndex){
 		    	console.log("MOVING", oldIndex, newIndex);
-		    	var currSlide = $(self._carousel.find("li:eq(" + newIndex + ")"));
-		    	if(currSlide.hasClass("player")) {
-			    	var id = $(currSlide.find('canvas, iframe')[0]).attr("id");
-			    	if(id) {
-		    			self._players[id].pause();
-		    		}
-		    	}
-		    	if(slide.hasClass("player")) {
-			    	var id = $(slide.find('canvas, iframe')[0]).attr("id");
-			    	if(id) {
-		    			self._players[id].play();
-		    			}
-		    		}
-		    	 },
+		    	var currSlide = self._carousel.find("li:eq(" + newIndex + ")");
+		    	var id = $(currSlide.find('canvas, iframe')[0]).attr("id");
+		    	if(id) {
+	    			self._players[id].pause();
+	    		}
+		    	var id = $(slide.find('canvas, iframe')[0]).attr("id");
+		    	if(id) {
+	    			self._players[id].play();
+	    			}
+	    		}
 		});	
 
 		$("#nav-wrapper").click(function(){
@@ -87,7 +72,18 @@ gallery.project = null;
 		$(gallery.control).on('move', function(event){
 			self.move();
 		});
-	};
+	}; 
+
+	// Start the project
+	Project.prototype.start = function() {
+		this._carousel.goToSlide(0);
+	}
+
+	// Stop the project
+	Project.prototype.stop = function() {
+		var currIndex = this._carousel.getCurrentSlide();
+		var currSlide = this._carousel.find("li:eq(" + index + ")");
+	}
 
 	// Shift all projects
 	// Start the project if we are going to this project

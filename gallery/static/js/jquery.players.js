@@ -1,0 +1,176 @@
+// Player controls
+$.widget('doc.player', {
+	options : {
+	},
+	_create : function() {
+		this.element.addClass("doc_player");
+		this.id = this.element.attr("id");
+		this._on({
+			"click" : $this._toggle,
+		})
+	},
+	_toggle : function() {
+		if(this.isPlaying) {
+			this.play();
+		}
+		else {
+			this.pause();
+		}
+	},
+	enter : function() {
+		console.log("ENTERING!!! " + this.id);
+		this.isLeaving = false;
+		this.isEntering = true;
+		this.play();
+		// Turn up the volume if there's audio
+		if(this.audio) {
+			this._turnUp(function(){
+				$this.isEntering = false;
+			});	
+		}
+	},
+	leave : function() {
+		console.log("LEAVING!!! " + this.id);
+		this.isEntering = false;
+		this.isLeaving = true;
+		if(this.audio) {
+			this._turnDown(function(){
+				$this.pause();
+				$this.isLeaving = false;
+			});
+		}
+		else {
+			this.pause();
+		}
+	},
+	_turnDown = function(callback) { 
+		var $this = this;
+		while (this.audio.volume > 0 && this.isLeaving) {
+			console.log("TURNING DOWN!!! " + $this.id + "\tVOL: " + $this.audio.volume);
+			if(!this.paused()) {
+				$this._down();
+			} 	
+		}
+		if(callback) {
+			callback();
+		}
+	},
+	_turnUp = function() { 
+		//console.log("TURNING UP!!! " + this.id);
+
+		while (this.audio.volume < .5 && this.isEntering) {
+			console.log("TURNING UP!!! " + $this.id + "\tVOL: " + $this.audio.volume);
+			if(!this.paused()) {
+				$this._down();
+			}	
+		}
+	},
+	_destroy : function() {
+		this.element.removeClass("doc_player");
+	}	
+});
+
+$.widget('doc.sketch', $.doc.player, {
+	options : {
+		sketch : null,
+		audio : null,
+	},
+	_create : function() {
+		var $this = this;
+		this.element.addClass("doc_sketch");
+		this.sketch = this.options.sketch;
+		this.audio = this.options.audio;
+	},
+	_init : function() {
+		this.pause();
+		// And mute the sound
+		if(this.audio) {
+			this._mute();
+		}
+	},
+	play : function() {
+		this.sketch.loop();
+		this.audio.play();
+	},
+	pause : function() {
+		this.sketch.noLoop();
+		this.audio.pause();
+	},
+	_paused : function() {
+		return this.audio.paused;
+	},
+	_up : function() {
+		this.audio.volume += 0.0001;
+
+	},
+	_down : function() {
+		this.audio.volume -= 0.001;
+	},
+	_mute : function() {
+		this.audio.volume = 0;
+	},
+	_destroy : function() {
+		this.element.removeClass("doc_sketch");
+	}	
+});
+
+$.widget('doc.vimeo', $.doc.player, {
+	options : {
+		vimeo : null,
+		callback : null,
+	},
+	_create : function() {
+		var $this = this;
+		this.element.addClass("doc_vimeo");
+		this.vimeo = this.options.vimeo;
+		this.audio = this.options.vimeo;
+
+
+	},
+	_init : function() {
+		var $this = this;
+		// Set volume to 0
+		this.vimeo.addEvent("ready", function(){
+			$this.mute();
+		});
+
+		// Listen for finish
+		this.vimeo.addEvent("finish", function(){ 
+			console.log("FINISHED VIDEO!!!");
+			if(this.options.callback) {
+				this.options.callback();
+			}
+		});
+	},
+	play : function() {
+		this.vimeo.api.("play");
+	},
+	pause : function() {
+		this.vimeo.api("pause");
+	},
+	_paused : function() {
+		this.vimeo.api("paused", function(paused){
+			return paused;
+		});
+	},
+	_up : function() {
+		var $this = this;
+		this.vimeo.api("setVolume", $this._curr() + 0.0001);
+
+	},
+	_down : function() {
+		var $this = this;
+		this.vimeo.api("setVolume",  $this._curr() - 0.001);
+	},
+	_curr : function() {
+		$this.vimeo.api("getVolume", function(volume){
+			return volume;
+		});
+	},
+	_mute : function() {
+		this.vimeo.api("setVolume", 0);
+	},
+	_destroy : function() {
+		this.element.removeClass("doc_vimeo");
+	}	
+});
