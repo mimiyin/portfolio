@@ -30,33 +30,35 @@ gallery.control = null;
 					var p = new gallery.project(project);
 					control._media[m].push(p);
 					control._projects[project.code] = p;
-					
-					// Listen for nav clicks to zoon in on selected project
-					$(p).on('click', function(){
-						control._zoomIn(p);
-					});
 				});
 			});	
 
-			// Create nav item
-			this._nav = $(gallery.nav.init($('#nav')));
+			// Initiate nav
+			this._nav = gallery.nav.init($("#nav-wrapper"));
 
-			// Zoom in project
-			this._nav.on('click', function(p){
-				control.zoomIn(control_projects[p]);
-			});	
-
-			// Zoom out
-			this._nav.on('zoomOut', function(){
-				control._zoomOut();
+			// Move to a specific project
+			$(this._nav).on("move", function(event, code){
+				control._move(control._getProject(code));
 			});
 
+			// Get random project
+			$(this._nav).on("random", function(){
+				control._move(control._getRandomProject());
+			});
+
+			this.currentProject = this._getProject('multiverse');
+
 			// Start out zoomed out
-			this._zoomOut();			
+			this._move(this._getProject('beluga'));			
+		},
+
+		// Get specific project
+		_getProject : function(code) {
+			return this._projects[code];
 		},
 
 		// Get random project
-		getRandomProject : function() {
+		_getRandomProject : function() {
 			var randomProject = utils.getRandom(control._projects);
 			if(randomProject.code == control._currentProject.code)
 				control.getRandomProject();
@@ -65,63 +67,28 @@ gallery.control = null;
 			}
 		},
 
-		// Clear zoom status on all projects
-		_clearZoom : function() {
-			$.each(this._projects, function(p, project){
-				project.isZoomedIn = false;
-			});
-		},
-				
-		// Gallery Map
-		_zoomOut : function() {
-			//console.log("ZOOMING OUT");
-			this._element.toggleClass("zoomedOut", true, "slow");
-
-			// Reset what's "current"
-			this._currentProject = null;
-			this._currentMediumInd = 0;
-			this._currentProjectInd = 0;
-			this._clearZoom();
-
-			control.isZoomedOut = true;
-
-			// Tell everyone we've zoomed out
-			$(this).trigger('zoomOut');
-		},
-
 		// Open project
-		_zoomIn : function(zoomProject) {
-			console.log("ZOOMING IN ON: " + zoomProject.code);
+		_move : function(project) {
+			console.log("MOVING TO: " + project.code);
 
-			// Don't bother if we're already here
-			if(zoomProject.isZoomedIn) {
+			if(this.currentProject.code == project.code) {
 				return;
 			}
 
-			//Make it true if it wasn't already
-			this._clearZoom();
-			zoomProject.isZoomedIn = true;
-
-			// Toggle class if changing class
-			if(control.isZoomedOut) {
-				this._element.toggleClass("zoomedOut", false, "slow");
-			}
-
 			// Calculate shift for Project
-			var leftShift = this._currentMediumInd - zoomProject.medium;
-			var topShift =  this._currentProjectInd - zoomProject.order;
+			var leftShift = this.currentProject.medium - project.medium;
+			var topShift =  this.currentProject.order - project.order;
+
+			// Update current project
+			this.currentProject = project;
+
+			console.log("SHIFT", leftShift, topShift);
 					
+			// Move the entire gallery
+			this._element.shift(leftShift, topShift, 100, 100, 'vh', 2500);
+
 			// Emit zoom in event 
-			$(this).trigger('zoomIn', { left: leftShift, top: topShift });
-
-			// Update what's current
-			this._currentMediumInd = zoomProject.medium;
-			this._currentProjectInd = zoomProject.order;
-
-			this.isZoomedOut = false;
-
-			// Emit shift event
-			$(this).trigger('shift', { top : topShift, left : leftShift});
+			$(this).trigger('move', { left : leftShift, top: topShift });
 		}				
 	}	
 	

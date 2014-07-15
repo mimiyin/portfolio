@@ -7,36 +7,28 @@ gallery.nav = null;
 			this._element = el;
 			this._selector = this._element.find('#selector');
 
-			// Show/hide nav with mouseenter/mouseleave
-			this._element.parent().mouseenter(function(){
-				if(!control.isZoomedOut)
-					nav._show();
-			});
-			
-			this._element.parent().mouseleave(function(){
-				if(!control.isZoomedOut)
-					nav._hide();
-			});	
-
-			// Click listeners for projects
-			this._element.find('.nav-project').click(function(){
-				$(nav).emit('click', $(this).attr('code'));
-			});
-
 			// Click listener for random
 			this._element.find('#random').click(function(){
-				$(nav).emit('click', control.getRandomProject());
+				$(this).trigger("random");
 			});
 
-			// Click listener for zoom-out
-			this._element.find('#zoom-out').click(function(){
-				$(nav).emit('zoomOut');
+			// Click listener for project nav
+			this._element.find('.nav-project').click(function(e){
+				e.stopPropagation();
+				$(nav).trigger("move", $(this).attr("code") );
+			})
+
+			// Listen for navigation clicks in control
+			$(gallery.control).on('move', function(event, offset){
+				nav.shift(offset.left, offset.top);
 			});
+
+			return this;
 		},
 
 		shift : function(leftShift, topShift) {						
 			// Shift the selector
-			this._selector.shift(-leftShift, -topShift, 19, 25, 3000);			
+			this._selector.shift(-leftShift, -topShift, 20, 33.33, '%', 2500);			
 		},
 
 		// Show nav for 5 seconds after moving mouse
@@ -56,7 +48,7 @@ gallery.nav = null;
 				nav._element.slideUp("slow", function(){
 					$(this).css("display", "none");
 				});
-			}, isZoomingOut ? 0 : 5000);
+			}, 5000);
 		},		
 	}
 

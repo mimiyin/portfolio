@@ -15,13 +15,7 @@
 		{% render_block "css" %}
 		{% render_block "js" %}
 		{% block head %}{% endblock %}
-		
-		{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-1.9.0.min.js"></script>{% endaddtoblock %}
-		{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-ui-1.10.0.custom.min.js"></script>{% endaddtoblock %}	
-		{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.lazyloadxt.extra.min.js"></script>{% endaddtoblock %}
-	
-		{% addtoblock "css" %}<link type="text/css" rel="stylesheet" href="{{STATIC_URL}}css/base.css"/>{% endaddtoblock %}
-		
+				
 		<title>{% block title %}Degrees of Chance{% endblock %}</title>
 	</head>
 	

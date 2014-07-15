@@ -3,6 +3,8 @@ gallery.sketchPlayer = null;
 
 (function(){
 
+	var delta = 0.01;
+
 	var SketchPlayer = function SketchPlayer(id, sketch) {
 		this.id = id;
 		this.type = "sketch";
@@ -10,49 +12,54 @@ gallery.sketchPlayer = null;
 		var thisSP = this;
 		try { 
 			this._audio = this.sketch.getAudio(); 
+			console.log("AUDIO FOR: " + this.id, this._audio);
+
 			this._audio.addEventListener('ended', function(){
 				console.log("AUDIO ENDED!");
 				thisSP._audio.currentTime = 0;
 				thisSP.sketch.reset();
 			})
 			this._hasAudio = true;
-			} 
+		} 
 		catch(e) {
 			this._hasAudio = false;
 			console.log(this.id + " has no audio."); 
-			} ;
+		} ;
 						
-		// Pause it right out of the gate
-		this.sketch.noLoop();
-		if(this._hasAudio) {
-			this._mute();
-		}
-				
+		// Reset
+		this._reset();				
 	}
+
 	SketchPlayer.prototype.pause = function() {
 		//console.log("PAUSING!!! " + this.id);
 		// Cancel out any callbacks
 		this._callback = null;
 		var thisSP = this;
-		if(this._hasAudio)
+		if(this._hasAudio) {
 			this._turnDown(function(){
-				thisSP.noLoop();
+				thisSP._reset();
 			});
-		else
+		}
+		else {
 			this.sketch.noLoop();
+		}
 	}
+
 	SketchPlayer.prototype.play = function(callback) {
 		//console.log("PLAYING!!! " + this.id);
 		this.sketch.loop();
 		// Turn up the volume if there's audio
-		if(this._hasAudio)
+		if(this._hasAudio) {
 			this._turnUp();	
-		// Move to next slide
-		if(callback) this._callback = callback();
+		}
 	}
 	
 	SketchPlayer.prototype._reset = function() { 
-		this.sketch.reset(); 
+		this.sketch.noLoop();
+		// And mute the sound
+		if(this._hasAudio) {
+			this._mute();
+		}
 	}
 	
 	SketchPlayer.prototype._mute = function() {
@@ -60,36 +67,45 @@ gallery.sketchPlayer = null;
 	}
 	
 	SketchPlayer.prototype._turnDown = function(callback) { 
-		//console.log("TURNING DOWN!!! " + this.id);
 		this._isTurningDown = true;
-		function turnDown(thisSP) {
-			//If playing, don't keep turning down the volume
-			if(!thisSP._isTurningDown || thisSP._audio.volume < .05)
-				return;
-			thisSP._audio.volume-=.05; 	
-			if(thisSP._audio.volume > 0)
-				setTimeout(function() { turnDown(thisSP); }, 500);
-			else {
-				if(callback)
-					callback();
-				}
-			}
 		turnDown(this);
+
+		var thisSP = this;
+		function turnDown(thisSP) {
+			console.log("TURNING DOWN!!! " + thisSP.id + "\tVOL: " + thisSP._audio.volume);
+
+			//If playing, don't keep turning down the volume
+			if(!thisSP._isTurningDown) {
+				return;
+			}
+			if(thisSP._audio.volume > delta){
+				thisSP._audio.volume -= .01; 	
+				setTimeout(function() { turnDown(thisSP); }, 100);
+			}
+			else if(callback) {
+				callback();
+			}
+		}
 	}
 	
 	SketchPlayer.prototype._turnUp = function() { 
 		//console.log("TURNING UP!!! " + this.id);
 		this._isTurningDown = false;
-		function turnUp(thisSP) {
-			//If paused, don't keep turning up the volume
-			if(thisSP._isTurningDown || thisSP._audio.volume >= .5)
-				return;
-			thisSP._audio.play();
-			thisSP._audio.volume+=.02; 	
-			if(thisSP._audio.volume < .5)
-				setTimeout(function() { turnUp(thisSP); }, 500);
-			}
+		this._audio.play();
 		turnUp(this);
+
+		var thisSP = this;
+		function turnUp(thisSP) {
+			console.log("TURNING UP!!! " + thisSP.id + "\tVOL: " + thisSP._audio.volume);
+			//If paused, don't keep turning up the volume
+			if(thisSP._isTurningDown) {
+				return;
+			}
+			if(thisSP._audio.volume < .5) {
+				thisSP._audio.volume += .01; 	
+				setTimeout(function() { turnUp(thisSP); }, 250);
+			}
+		}
 	}
 		
 	gallery.sketchPlayer = SketchPlayer;
@@ -107,25 +123,21 @@ gallery.vimeoPlayer = null;
 		this._isPlaying = false;
 		
 		var thisVP = this;
-		
+
+		// Set volume to 0
+		this._video.addEvent("ready", function(){
+			thisVP._video.api("setVolume", 0);
+		});
+
+		// Listen for finish
 		this._video.addEvent("finish", function(){ 
 			console.log("FINISHED VIDEO!!!");
-			thisVP.onFinish();
-			})
-		
-		this._mute();			
-	}
-	
-	VimeoPlayer.prototype.onFinish = function() {
-		var callback = this._getCallback();
-		console.log(callback);
-		if(callback) callback();
-	}
-	
-	VimeoPlayer.prototype.reset = function() {
-		this._video.api()
-	}
-	
+			thisVP._video.api("setVolume", 0);
+			if(thisVP._callback) {
+				thisVP._callback();
+			}
+		});		
+	}	
 	VimeoPlayer.prototype._toggle = function() {
 		if(this._isPlaying)
 			thisVP._video.api("pause");
@@ -134,24 +146,19 @@ gallery.vimeoPlayer = null;
 	}
 	
 	VimeoPlayer.prototype.pause = function() {
-		//console.log("PAUSING!!! " + this.id);
+		console.log("PAUSING!!! " + this.id);
 		// Cancel out any callbacks
 		this._callback = null;
+
 		var thisVP = this;
 		this._turnDown(function(){
 			thisVP._video.api("pause");
 			thisVP._isPlaying = false;
 		});
 	}
-		
-	VimeoPlayer.prototype._getCallback = function() {
-		return this._callback;
-	}
-	
+			
 	VimeoPlayer.prototype.play = function(callback) { 
-
-//		console.log("PLAYING!!! " + this.id);
-//		console.log("IS ZOOMEDOUT: " + gallery.control.isZoomedOut);
+		console.log("PLAYING!!! " + this.id);
 		this._video.api("play");
 		this._isPlaying = true;
 		
@@ -167,39 +174,39 @@ gallery.vimeoPlayer = null;
 	}
 	
 	VimeoPlayer.prototype._turnDown = function(callback) { 
-		//console.log("TURNING DOWN!!! " + this.id);
-		
 		this._isTurningDown = true;
+		turnDown(this);
 		function turnDown(thisVP) {
 			if(!thisVP._isTurningDown)
 				return;
 			thisVP._video.api("getVolume", function(volume){
-				var newVolume = volume - .01;
+				console.log("TURNING DOWN!!! " + this.id + "\tVOL: " + volume);
+				var newVolume = parseFloat(volume) - .01;
 				thisVP._video.api("setVolume", newVolume); 
-				if(newVolume > 0)
-					setTimeout(function() { turnDown(thisVP); }, 500);
+				if(newVolume > delta)
+					setTimeout(function() { turnDown(thisVP); }, 100);
 				else if(callback)
 					callback();
 				});
-			}
-		
-		turnDown(this);
+			}		
 		}
-	VimeoPlayer.prototype._turnUp = function() { 
-		//console.log("TURNING UP!!! " + this.id);
+	VimeoPlayer.prototype._turnUp = function() { ;
 		this._isTurningDown = false;
-		
-		function turnUp(thisVP) {
-			if(thisVP._isTurningDown)
-				return;
-			thisVP._video.api("getVolume", function(volume){
-				var newVolume = parseFloat(volume) +.02;
-				thisVP._video.api("setVolume", newVolume); 
-				if(newVolume < .5)
-					setTimeout(function() { turnUp(thisVP); }, 500);
-				});
-			}
 		turnUp(this);
+
+		function turnUp(thisVP) {
+			if(thisVP._isTurningDown) {
+				return;
+			}
+			thisVP._video.api("getVolume", function(volume){
+				if(newVolume < .5) {
+					console.log("TURNING UP!!! " + this.id + "\tVOL: " + volume);
+					var newVolume = parseFloat(volume) + .01;
+					thisVP._video.api("setVolume", newVolume); 
+					setTimeout(function() { turnUp(thisVP); }, 250);
+				}
+			});
+		}
 	}
 		
 	gallery.vimeoPlayer = VimeoPlayer;

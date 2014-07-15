@@ -7,12 +7,12 @@ gallery.project = null;
 	var VimeoPlayer = gallery.vimeoPlayer;
 
 	var Project = function Project(project) {
+		var self = this;		
+
 		this.code = project.code;
 		this.medium = project.medium;
 		this.order = project.order;
 		this._element = $("#" + this.code);
-
-		var self = this;		
 
 		// Find videos and sketches
 		this._players = {};	
@@ -48,93 +48,52 @@ gallery.project = null;
 		});	
 
 		// Wire up the carousel
-		self._carousel = new Carousel($(self._element.find("ul.carousel")), {
-			onSlideStop : function(slide) {
-		    	if(slide.hasClass("player")) {
-			    	var id = $(slide.children()[0]).attr("id");
-			    	self._players[id].pause();
-			    	}				
-			},
-		    onSlideAfter: function (slide, oldIndex, newIndex, callback){
-		    	// Only play featured movies if we're zoomed out
-		    	if(slide.hasClass("player") && (!gallery.control.isZoomedOut || ((slide.hasClass("featured") && Math.random() > .67)))) {		    	
-			    	var id = $(slide.children()[0]).attr("id");
-			    	self._players[id].play(callback || null);
-			    	}
-		    	else
-		    		if(callback) callback();
-		    	},
+		this._carousel = this._element.find(".carousel").bxSlider({
+			infiniteLoop : true,
+			pager: false,
+			controls: false,
+			preventDefaultSwipeY : false,
+			mode : 'vertical',
+			video: true,
+			useCSS: false,
 		    onSlideBefore: function (slide, oldIndex, newIndex){
-		    	if(slide.hasClass("player")) {
-			    	var id = $(slide.children()[0]).attr("id");
-		    		self._players[id].pause();
+		    	console.log("MOVING", oldIndex, newIndex);
+		    	var currSlide = $(self._carousel.find("li:eq(" + newIndex + ")"));
+		    	if(currSlide.hasClass("player")) {
+			    	var id = $(currSlide.find('canvas, iframe')[0]).attr("id");
+			    	if(id) {
+		    			self._players[id].pause();
 		    		}
-		    	},
-		}) || null;	
+		    	}
+		    	if(slide.hasClass("player")) {
+			    	var id = $(slide.find('canvas, iframe')[0]).attr("id");
+			    	if(id) {
+		    			self._players[id].play();
+		    			}
+		    		}
+		    	 },
+		});	
+
+		$("#nav-wrapper").click(function(){
+			if(gallery.control.currentProject && (gallery.control.currentProject.code == self.code)) {
+				self._carousel.goToNextSlide();
+			}
+		})
 
 		// Emit click
 		this._element.click(function(){ $(self).trigger('click', self.code) });
 
-		// Listen for zoomIn
-		$(gallery.control).on('zoomIn', function(shift){
-			self.shift(shift.left, shift.top);
+		// Listen for move
+		$(gallery.control).on('move', function(event){
+			self.move();
 		});
 	};
 
-	// Make the carousel go from the beginning
-	Project.prototype.start = function() {
-		this._isPlaying = true;
-		if(this._carousel) {
-			this._carousel.start();
-		}
-	}
-	
-	// Stop the carousel
-	// Stop all live elements
-	Project.prototype.stop = function() {
-		//console.log("STOPPING: " + this.code);
-		this._isPlaying = false;
-		if(this._carousel) {
-			this._carousel.stop();
-		}
-	}
-		
 	// Shift all projects
 	// Start the project if we are going to this project
 	// Only stop project if we are leaving this project
-	Project.prototype.shift = function(leftShift, topShift) {
-		var self = this;
-		var callback;
-
-		var duration = gallery.control.isZoomedOut ? 0 : 500; 
-		
-		if(this.isZoomedIn) {
-			//I have to stop it first, otherwise, there will be interfering
-			//timed callbacks interfering with playing
-			callback = function() { self.start(); };
-		}
-		else if(this._isPlaying) {
-			callback = function() { self.stop(); };	
-		}
-				
-		this._element.shift(leftShift, topShift, 100, 100, duration, callback);		
-	}
-
-	// Zoom out into gallery map view
-	Project.prototype.zoomOut = function() {
-		this.start();
-		var self = this;
-		this._element.animate({
-			opacity : .1,
-			top : 0,
-			left : 0,
-			height : self._calcZoomedOutHeight(),
-			overflow : 'hidden',
-		}, Math.random()*2000 + 500, function() {
-			$(this).fadeTo(Math.random()*10000 + 2500, 1);
-			self.resizeMedia();
-			self._carousel.middleAlignMedia();		
-			})
+	Project.prototype.move = function() {
+		this._carousel.goToSlide(0);
 	}
 
 	gallery.project = Project;

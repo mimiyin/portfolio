@@ -2,14 +2,7 @@ var gallery = gallery || {};
 gallery.carousel = null;
 
 (function(){
-	var Carousel = function(element, options) {
-		var defaults = {
-				normal : { fadeIn : 1000, fadeOut : 500 },
-				still : { fadeIn : 1000, fadeOut : 500, delay: 10000 },
-				title : { fadeIn : 1000, fadeOut : 5000, delay : 7500 },
-				isAuto : false,
-		}
-		
+	var Carousel = function(element, options) {		
 		// Extend options
 		this._options = $.extend( {}, defaults, options );
 		this._el = element;
@@ -57,7 +50,6 @@ gallery.carousel = null;
 		}
 		
 		var self = this;
-		var isPreview = gallery.control.isZoomedOut == true;
 			
 		var isLastSlide = function() { 
 			return self._nextSlideIndex == self._lastSlideIndex;
@@ -66,14 +58,14 @@ gallery.carousel = null;
 		// Leave the current slide if it is not
 		// also the slide we're trying to go to
 		if(this._currentSlideIndex != this._nextSlideIndex)
-			this.goFromSlide(this._currentSlideIndex, isPreview);
+			this.goFromSlide(this._currentSlideIndex);
 
 		// Go to next slide
-		this.goToSlide(this._nextSlideIndex, isPreview, isLastSlide(), function(){
+		this.goToSlide(this._nextSlideIndex, isLastSlide(), function(){
 			// If we're in Preview mode or the Carousel is paused, stop cycling
 			// I need to listen for isPaused because this callback may not
 			// get called for a while, during which time everything has changed
-			if(isPreview || self._isPaused)
+			if(self._isPaused)
 				return;
 			// If you've reached the end of the slide, stop cycling
 			if(isLastSlide())
@@ -91,12 +83,6 @@ gallery.carousel = null;
 		this._cycle();
 		
 		var self = this;
-		// Show nav after 2.5 seconds
-		if(!isRestarting) {
-			setTimeout(function(){
-				self._showNav(true);
-			}, 2500);
-		}
 	}
 		
 	// Stop cycling animations.
