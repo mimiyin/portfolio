@@ -5,19 +5,13 @@
 			{% for project in medium %}
 				{% with project.code|add:".html" as template %}
 					<li code="{{project.code}}" class="navitem"> 
-						<ul class="carousel">
-							<li type="title" class="title-slide" alt="Intro">
-								<span class="project-title">{{project.title}}. </span>
-								<span class="project-tagline">{{project.tagline}}</span>
-								<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
-								<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
-								<span class="project-description">{{project.description}}</span>
-								<span class="project-materials">{{project.materials}}</span>
-								<span class="project-music">{{project.music}}</span>
-							</li>
-							<li><img src="{{STATIC_URL}}images/hamster_01.jpg"></li>
-							<li><img src="{{STATIC_URL}}images/hamster_02.jpg"></li>
-						</ul>
+						<span class="project-title">{{project.title}}. </span>
+						<span class="project-tagline">{{project.tagline}}</span>
+						<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
+						<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
+						<span class="project-description">{{project.description}}</span>
+						<span class="project-materials">{{project.materials}}</span>
+						<span class="project-music">{{project.music}}</span>
 					</li>
 				{% endwith %}
 			{% endfor %}		

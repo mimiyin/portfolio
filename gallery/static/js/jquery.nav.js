@@ -27,17 +27,8 @@ $.widget('doc.navitem', {
 	},
 	_create : function() {
 		var $this = this;
-		this.element.addClass("doc_navitem");
 		this._on({
 			"click" : $this._select,
-			"mouseenter" : $this.enter,
-			"mouseleave" : $this.leave,
-		});
-	},
-	_init : function() {
-		this.carousel = this.element.find(".carousel").bxSlider({
-			auto: false,
-			speed: 500,
 		});
 	},
 	_select : function() {
@@ -47,13 +38,4 @@ $.widget('doc.navitem', {
 	deselect : function() {
 		this.element.toggleClass("doc_selected", false, "fast");
 	},
-	enter : function() {
-		this.carousel.show();
-		this.carousel.startAuto();
-	},
-	leave : function() {
-		this.carousel.hide();
-		this.carousel.stopAuto();
-
-	}
 });

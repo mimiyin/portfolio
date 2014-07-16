@@ -1,3 +1,7 @@
+// Listen for scrolling
+
+
+
 // Player controls
 $.widget('doc.player', {
 	options : {
@@ -7,7 +11,12 @@ $.widget('doc.player', {
 		this.id = this.element.attr("id");
 		this._on({
 			"click" : $this._toggle,
-		})
+		});
+
+		// Listen for focus and scroll on parent element
+		this.element.on("scroll, focus", function(){
+			$this._map();
+		});
 	},
 	_toggle : function() {
 		if(this.isPlaying) {
@@ -42,6 +51,23 @@ $.widget('doc.player', {
 		else {
 			this.pause();
 		}
+	},
+	_map : function() {
+		// get the offset from the viewport
+		var vh = $(window).height();
+		var offset = 0;
+		// map the abs value of it between 0 and .5
+		var value = Math.abs(offset + vh)/vh;
+
+		if(value < 1) {
+					// Set the volume accordingly
+		this._set(vh*.5);
+			this.play();
+		}
+		else {
+			this.pause();
+		}
+
 	},
 	_turnDown : function(callback) { 
 		var $this = this;

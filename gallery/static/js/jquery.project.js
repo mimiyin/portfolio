@@ -8,7 +8,6 @@ $.widget('doc.project', {
 		var $this = this;
 		this.element.addClass("doc_project");
 		this.loaded = false;
-
 	},
 	_init : function() {
 		this._load();
@@ -35,45 +34,18 @@ $.widget('doc.project', {
 				$this.players.push($(slide)[type]().data("doc-" + type));
 			}
 		});
-
-		// First slide
-		if(this.players.length > 0) {
-			this.hasPlayers = true;
-			this.currSlide = this.players[0];
-		}
-
-		// Wire up the carousel
-		this.carousel = this.element.find(".carousel").bxSlider({
-			infiniteLoop : false,
-			pager: true,
-			controls: false,
-			mode : 'vertical',
-			video: true,
-			useCSS: false,
-		    onSlideBefore: function (slide, oldIndex, newIndex){
-		    	$this.slides[oldIndex].leave();
-		    	$this.slides[newIndex].enter();
-		    	$this.currSlide = $this.slides[newIndex];
-	    	},
-		});	
-
 		this.loaded = true;
 	},
-	_start : function() {
-		if(this.hasPlayers) {
-			this.currSlide.enter();
-		}
-	},
 	_stop : function() {
-		if(this.hasPlayers) {
-			this.currSlide.leave();
-		}
+		this.players.each(function(p, player){
+			player.leave();
+		});
 	},
 	select : function() {
 		if(!this.loaded) {
 			this._load();
 		}
-
+		this.element.focus();
 		// Wait for everything to load before starting
 		this._start();
 	},
