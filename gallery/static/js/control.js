@@ -31,12 +31,14 @@ gallery.control = null;
 			});	
 
 			// Initiate nav
-			this.nav = $("#nav-wrapper").nav({
-				selected : function(event, ui) {
-					var code = ui;
-					control._move($this._getProject(code));
+			this.nav = $("#nav").nav({
+				selected : function(event, code) {
+					control._move(control._getProject(code));
 				}
 			});
+
+			// Start with top-left
+			this._currentProject = this._getProject("multiverse");
 
 			// Start out with about
 			this._move(control._getProject("about"));			
@@ -48,32 +50,31 @@ gallery.control = null;
 
 		// Open project
 		_move : function(project) {
-			console.log("MOVING TO: " + project.options.code);
+			console.log("MOVING TO", project.options.code);
 
 			if(this.currentProject.options.code == project.options.code) {
 				return;
 			}
 
 			// Calculate shift for Project
-			var leftShift = (this.currentProject.options.medium || 0) - project.medium;
-			var topShift =  (this.currentProject.options.order || 0) - project.order;
+			var leftShift = this.currentProject.options.medium - project.options.medium;
+			var topShift =  this.currentProject.options.order - project.options.order;
 
-			// Update current project
-			this.currentProject = project;
-
-			// Move the entire gallery
 			this.element.shift(leftShift, topShift, 100, 100, 'vh', 2500);
 
-			// Deselect the other projects
+			//Deselect the other projects
 			$.each(this.projects, function(p, proj) {
 				if(p == project.code) {
 					// Select the project
 					project.select();					
 				}
-				else {
-					project.deselect();
+				else if(p == control.currentProject.options.code) {
+					proj.deselect();
 				}
 			});
+
+			// Update current project
+			this.currentProject = project;
 		}				
 	}	
 	

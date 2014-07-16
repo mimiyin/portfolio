@@ -6,7 +6,6 @@ $.widget('doc.project', {
 	},
 	_create : function() {
 		var $this = this;
-		this.element.addClass("doc_project");
 		this.loaded = false;
 	},
 	_init : function() {
@@ -17,7 +16,8 @@ $.widget('doc.project', {
 
 		// Load sketches
 		this.sketches = this.element.find("[type=sketch]").sketch();
-		// Load vimeos
+
+		// Load the vimeos
 		this.vimeos = this.element.find("[type=vimeo]").vimeo();
 
 		// Load embedded websites
@@ -37,17 +37,18 @@ $.widget('doc.project', {
 		this.loaded = true;
 	},
 	_stop : function() {
-		this.players.each(function(p, player){
+		$.each(this.players, function(p, player){
 			player.leave();
 		});
 	},
+
 	select : function() {
 		if(!this.loaded) {
 			this._load();
 		}
-		this.element.focus();
-		// Wait for everything to load before starting
-		this._start();
+		this.element.trigger("focus");
+		var $this = this;
+		this.element.trigger("selected");
 	},
 	deselect : function() {
 		this._stop();

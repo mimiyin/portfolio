@@ -7,8 +7,6 @@
 {% addtoblock "css" %}<link type="text/css" rel="stylesheet" href="{{STATIC_URL}}js/lib/jquery/css/bxslider/jquery.bxslider.css"/>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/css_browser_selector.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.lazyloadxt.extra.min.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.fitvids.js"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.bxslider.min.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/processing.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/froogaloop.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-plus.js"></script>{% endaddtoblock %}
@@ -18,11 +16,9 @@
 		<div id="medium-{{m}}" class="medium">
 			{% for project in medium %}
 				{% with project.code|add:".html" as template %}
-					<div id="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
-						<ul class="carousel"> 
+					<ul id="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
 							{% include template %}
-						</ul>
-					</div>
+					</ul>
 				{% endwith %}
 			{% endfor %}		
 		</div>

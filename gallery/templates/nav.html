@@ -1,5 +1,4 @@
-<div id="nav-wrapper">
-	<ul id="nav">
+<div id="nav">
 		{% for m, medium in media.items %}
 		<ul id="nav-for-medium-{{m}}" class="nav-medium">
 			{% for project in medium %}
@@ -17,5 +16,4 @@
 			{% endfor %}		
 		</ul>
 		{% endfor %}
-	</ul>
 </div>	

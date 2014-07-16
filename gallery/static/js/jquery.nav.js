@@ -4,18 +4,25 @@ $.widget('doc.nav', {
 	},
 	_create : function() {
 		var $this = this;
-		this.element.addClass("doc_nav");
+		// Fade it back in on mousemove
+		$("body").mousemove(function(){
+			console.log("MOVIN THE MOUSE");
+			$this.element.stop(true, false).fadeTo(1000, 1, function(){
+				setTimeout(function(){
+					$this.element.fadeTo(2500, 0)
+				}, 5000)
+			});
+		});
 	},
 	_init : function() {
 		var $this = this;
 		this.navitems = [];
 		var navitem = this.element.find("li.navitem").navitem({
 			selected : function(event, ui) {
-				console.log($(event.target).attr('code'));
 				// // deselect all nav items
 				// $this.navitems('deselect');
 				// // tell control what's been selected
-				$this._trigger('selected');
+				$this._trigger('selected', null, $(event.target).attr("code"));
 			}
 		});
 	}
