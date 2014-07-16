@@ -61,14 +61,12 @@ gallery.control = null;
 			var topShift =  this.currentProject.options.order - project.options.order;
 
 			this.element.shift(leftShift, topShift, 100, 100, 'vh', 2500);
+			
+			project.select();
 
 			//Deselect the other projects
 			$.each(this.projects, function(p, proj) {
-				if(p == project.code) {
-					// Select the project
-					project.select();					
-				}
-				else if(p == control.currentProject.options.code) {
+				if(p == control.currentProject.options.code) {
 					proj.deselect();
 				}
 			});

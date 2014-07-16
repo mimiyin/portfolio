@@ -42,6 +42,9 @@
 			Processing.logger = console;
 			var media = {{media.items | jsonify }};
 			gallery.control.init(media);
+			$("body").fadeTo(2500, 1, function(){
+				$("#nav").fadeTo(5000, 1);
+			});
 		});
 		</script>
 <!-- <![endif]-->

@@ -6,9 +6,6 @@ $.widget('doc.project', {
 	},
 	_create : function() {
 		var $this = this;
-		this.loaded = false;
-	},
-	_init : function() {
 		this._load();
 	},
 	_load : function() {
@@ -34,23 +31,17 @@ $.widget('doc.project', {
 				$this.players.push($(slide)[type]().data("doc-" + type));
 			}
 		});
-		this.loaded = true;
 	},
 	_stop : function() {
 		$.each(this.players, function(p, player){
 			player.leave();
 		});
 	},
-
 	select : function() {
-		if(!this.loaded) {
-			this._load();
-		}
-		this.element.trigger("focus");
-		var $this = this;
-		this.element.trigger("selected");
+		this.element.click();
 	},
 	deselect : function() {
+		console.log("DESELECT!!!!");
 		this._stop();
 	}
 });

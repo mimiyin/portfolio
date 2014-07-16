@@ -15,7 +15,7 @@ $.widget('doc.player', {
 
 		//Listen for focus and scroll on parent element
 		this.viewport = this.element.parents(".project");
-		this.viewport.on("scroll selected", function(){
+		this.viewport.on("scroll click", function(){
 			$this._map();
 		});
 	},
@@ -129,6 +129,7 @@ $.widget('doc.sketch', $.doc.player, {
 	},
 	_create : function() {
 		this._super();
+		console.log("SKETCH!!!");
 		this.sketch = Processing.getInstanceById(this.id);
 		this.audio = new Audio(this.element.find("audio"));
 	},
@@ -140,6 +141,7 @@ $.widget('doc.sketch', $.doc.player, {
 		}
 	},
 	play : function() {
+		console.log("PLAY SKETCH!!!");
 		this.sketch.loop();
 		this.audio.play();
 	},
@@ -165,6 +167,7 @@ $.widget('doc.vimeo', $.doc.player, {
 	_create : function() {
 		this._super();
 
+		console.log("VIMEO!!!");
 		this.vimeo = $f(this.element.find('iframe')[0]);
 		this.audio = this.vimeo;
 	},

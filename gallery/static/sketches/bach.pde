@@ -95,7 +95,7 @@ void initialize() {                                              // create new s
     springs.add(new Spring((noise(t+random(10))*width*-1), (noise(t+random(100))*noise(t)*random(0.01))));
     squares.add(new Square((noise(t+random(100))*250)));
     t += random (-1, 5);
-    bach.play();         										// as soon as first spring/square is created, play music                 
+    bach.play();         										                   // as soon as first spring/square is created, play music                 
   }
 }
 
