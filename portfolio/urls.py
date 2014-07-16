@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'gallery.views.index', name='index'),
     url(r'^froog$', 'gallery.views.froog', name='froog'),
+    url(r'^p5$', 'gallery.views.p5', name='p5'),
 
     # url(r'^portfolio/', include('portfolio.foo.urls')),
 

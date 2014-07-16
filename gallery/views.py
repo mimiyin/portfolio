@@ -29,3 +29,7 @@ def index(request):
 def froog(request):
     template = 'froog.html'
     return render_to_response(template, {}, context_instance=RequestContext(request))
+
+def p5(request):
+    template = 'p5.html'
+    return render_to_response(template, {}, context_instance=RequestContext(request))
