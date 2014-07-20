@@ -13,5 +13,13 @@
 	   <source id="mp3" src="{{STATIC_URL}}audio/bach.mp3" type="audio/mp3">
 	   Your browser does not support the audio tag.
 	</audio>
+
+	<script type="text/javascript">
+		var bach;
+		$(document).ready(function(){
+			bach = $("#flur-audio")[0];
+			console.log("GOT BACH", bach);
+		});
+	</script>
 </li>
 

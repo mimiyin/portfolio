@@ -28,20 +28,17 @@ $.widget('doc.player', {
 		}
 	},
 	enter : function() {
-		console.log("ENTERING!!! " + this.id);
+		console.log("ENTERING", this.id);
 		var $this = this;
 		this.isLeaving = false;
-		this.isEntering = true;
 		this.play();
 		// Turn up the volume if there's audio
 		if(this.audio) {
-			this._turnUp(1, function(){
-				$this.isEntering = false;
-			});	
+			this._turnUp(1);	
 		}
 	},
 	leave : function() {
-		console.log("LEAVING!!! " + this.id);
+		console.log("LEAVING", this.id);
 		var $this = this;
 		this.isEntering = false;
 		this.isLeaving = true;
@@ -56,23 +53,22 @@ $.widget('doc.player', {
 		}
 	},
 	_map : function() {
-		console.log("MAPPING!!!");
-
 		// Get the view height
 		var vh = $(window).height();
 		// Get the offset from the viewport
 		var acreage = (this.element.offset().top + vh) / vh;
-		console.log(this.element.offset().top, vh, acreage);
+		console.log("MAPPING", this.id, this.element.offset().top, acreage);
 		if(acreage > 0 && acreage < 2) {
-
-			this._dial(acreage);
-			// Set the volume accordingly
-			this._set(acreage*.5);
 			this.play();
+			if(this.audio) {
+				this._dial(acreage);
+			}
 		}
 		else {
-			this._set(0);
 			this.pause();
+			if(this.audio) {
+				this._set(0);
+			}
 		}
 
 	},
@@ -92,9 +88,9 @@ $.widget('doc.player', {
 	},
 	_turnDown : function(goal, callback) { 
 		var $this = this;
-		while (this.audio.volume > goal && this.isLeaving) {
+		while (this._get() > goal && this.isLeaving) {
 			console.log("TURNING DOWN!!! " + $this.id + "\tVOL: " + $this.audio.volume);
-			if(!this.paused()) {
+			if(!$this.paused()) {
 				$this._down();
 			} 	
 		}
@@ -104,11 +100,11 @@ $.widget('doc.player', {
 	},
 	_turnUp : function(goal, callback) { 
 		//console.log("TURNING UP!!! " + this.id);
-
-		while (this.audio.volume < goal && this.isEntering) {
+		var $this = this;
+		while (this._get() < goal && !this.isLeaving) {
 			console.log("TURNING UP!!! " + $this.id + "\tVOL: " + $this.audio.volume);
-			if(!this.paused()) {
-				$this._down();
+			if(!$this._paused()) {
+				$this._up();
 			}	
 		}
 		if(callback) {
@@ -131,7 +127,8 @@ $.widget('doc.sketch', $.doc.player, {
 		this._super();
 		console.log("SKETCH!!!");
 		this.sketch = Processing.getInstanceById(this.id);
-		this.audio = new Audio(this.element.find("audio"));
+		this.audio = this.element.find("audio")[0] || null;
+		console.log(this.audio);
 	},
 	_init : function() {
 		this.pause();
@@ -143,11 +140,16 @@ $.widget('doc.sketch', $.doc.player, {
 	play : function() {
 		console.log("PLAY SKETCH!!!");
 		this.sketch.loop();
-		this.audio.play();
+		if(this.audio) {
+			this.audio.play();
+		}
 	},
 	pause : function() {
 		this.sketch.noLoop();
-		this.audio.pause();
+		if(this.audio) {
+			console.log(this.id, this.audio);
+			this.audio.pause();
+		}
 	},
 	_paused : function() {
 		return this.audio.paused;
@@ -157,6 +159,7 @@ $.widget('doc.sketch', $.doc.player, {
 	},
 	_set : function(volume) {
 		this.audio.volume = volume;
+		console.log(this.id, volume, this.audio.volume);
 	}
 });
 
