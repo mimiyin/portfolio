@@ -6,20 +6,12 @@
 
 
 <li type="sketch" alt="Flur">
-	<canvas id="bach" data-processing-sources="{{STATIC_URL}}sketches/bach.pde" width="1280" height="768">
+	<canvas id="bach" data-processing-sources="{{STATIC_URL}}sketches/bach.pde" width="100vw" height="100vh">
 	</canvas>
 	<audio id="flur-audio">
 	   <source id="ogg" src="{{STATIC_URL}}audio/bach.ogg" type="audio/ogg">
 	   <source id="mp3" src="{{STATIC_URL}}audio/bach.mp3" type="audio/mp3">
 	   Your browser does not support the audio tag.
 	</audio>
-
-	<script type="text/javascript">
-		var bach;
-		$(document).ready(function(){
-			bach = $("#flur-audio")[0];
-			console.log("GOT BACH", bach);
-		});
-	</script>
 </li>
 

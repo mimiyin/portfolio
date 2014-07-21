@@ -14,8 +14,8 @@ $.widget('doc.player', {
 		});
 
 		//Listen for focus and scroll on parent element
-		this.viewport = this.element.parents(".project");
-		this.viewport.on("scroll click", function(){
+		this.viewport = $(this.element.parents(".project")[0]);
+		this.viewport.on("scroll click", function(event){
 			$this._map();
 		});
 	},
@@ -56,12 +56,12 @@ $.widget('doc.player', {
 		// Get the view height
 		var vh = $(window).height();
 		// Get the offset from the viewport
-		var acreage = (this.element.offset().top + vh) / vh;
+		var acreage = parseInt((this.element.offset().top + vh) / vh);
 		console.log("MAPPING", this.id, this.element.offset().top, acreage);
-		if(acreage > 0 && acreage < 2) {
+		if(acreage >= 0 && acreage <= 2) {
 			this.play();
 			if(this.audio) {
-				this._dial(acreage);
+				this._dial(acreage*0.5);
 			}
 		}
 		else {
@@ -99,7 +99,6 @@ $.widget('doc.player', {
 		}
 	},
 	_turnUp : function(goal, callback) { 
-		//console.log("TURNING UP!!! " + this.id);
 		var $this = this;
 		while (this._get() < goal && !this.isLeaving) {
 			console.log("TURNING UP!!! " + $this.id + "\tVOL: " + $this.audio.volume);
@@ -112,11 +111,19 @@ $.widget('doc.player', {
 		}
 	},
 	_up : function() {
-		this._set(this._get() + 0.0001);
+		this._set(this._get() + 0.001);
 
 	},
 	_down : function() {
-		this._set(this._get() - 0.0001);
+		this._set(this._get() - 0.01);
+	},
+	_set : function(volume) {
+		if(volume >= 1) {
+			volume = 0.9999;
+		}
+		else if(volume < 0) {
+			volume = 0;
+		}
 	}
 });
 
@@ -125,10 +132,8 @@ $.widget('doc.sketch', $.doc.player, {
 	},
 	_create : function() {
 		this._super();
-		console.log("SKETCH!!!");
 		this.sketch = Processing.getInstanceById(this.id);
 		this.audio = this.element.find("audio")[0] || null;
-		console.log(this.audio);
 	},
 	_init : function() {
 		this.pause();
@@ -138,16 +143,16 @@ $.widget('doc.sketch', $.doc.player, {
 		}
 	},
 	play : function() {
-		console.log("PLAY SKETCH!!!");
+		console.log("PLAY", this.id);
 		this.sketch.loop();
 		if(this.audio) {
 			this.audio.play();
 		}
 	},
 	pause : function() {
+		console.log("PAUSE", this.id);
 		this.sketch.noLoop();
 		if(this.audio) {
-			console.log(this.id, this.audio);
 			this.audio.pause();
 		}
 	},
@@ -158,8 +163,9 @@ $.widget('doc.sketch', $.doc.player, {
 		return this.audio.volume;
 	},
 	_set : function(volume) {
+		this._super(volume);
 		this.audio.volume = volume;
-		console.log(this.id, volume, this.audio.volume);
+		console.log("SETTING", this.id, this.audio.volume);
 	}
 });
 
@@ -169,8 +175,6 @@ $.widget('doc.vimeo', $.doc.player, {
 	},
 	_create : function() {
 		this._super();
-
-		console.log("VIMEO!!!");
 		this.vimeo = $f(this.element.find('iframe')[0]);
 		this.audio = this.vimeo;
 	},
@@ -184,7 +188,7 @@ $.widget('doc.vimeo', $.doc.player, {
 
 		// Listen for finish
 		this.vimeo.addEvent("finish", function(){ 
-			console.log("FINISHED VIDEO!!!");
+			console.log("FINISHED", this.id);
 			if(this.options.callback) {
 				this.options.callback();
 			}
@@ -207,6 +211,7 @@ $.widget('doc.vimeo', $.doc.player, {
 		});
 	},
 	_set : function(volume) {
+		this._super(volume);
 		this.vimeo.api("setVolume", volume);
 	}
 });

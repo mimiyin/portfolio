@@ -39,6 +39,7 @@ $.widget('doc.project', {
 	},
 	select : function() {
 		this.element.click();
+		window.location.hash = this.options.code;
 	},
 	deselect : function() {
 		console.log("DESELECT!!!!");

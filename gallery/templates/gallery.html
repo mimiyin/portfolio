@@ -4,9 +4,9 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-ui-1.10.0.custom.min.js"></script>{% endaddtoblock %}	
 
 {% addtoblock "css" %}<link type="text/css" rel="stylesheet" href="{{STATIC_URL}}css/base.css"/>{% endaddtoblock %}
-{% addtoblock "css" %}<link type="text/css" rel="stylesheet" href="{{STATIC_URL}}js/lib/jquery/css/bxslider/jquery.bxslider.css"/>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/css_browser_selector.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.lazyloadxt.extra.min.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery.fitvids.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/processing.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/froogaloop.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-plus.js"></script>{% endaddtoblock %}
@@ -16,7 +16,7 @@
 		<div id="medium-{{m}}" class="medium">
 			{% for project in medium %}
 				{% with project.code|add:".html" as template %}
-					<ul id="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
+					<ul code="{{project.code}}" class="project col-{{project.medium}} row-{{project.order}}"> 
 							{% include template %}
 					</ul>
 				{% endwith %}
@@ -43,7 +43,13 @@
 			var media = {{media.items | jsonify }};
 			gallery.control.init(media);
 			$("body").fadeTo(2500, 1, function(){
-				$("#nav").fadeTo(5000, 1);
+				$("#nav").fadeTo(5000, 1, function(){
+					if(window.location.hash != "#about") {
+						setTimeout(function(){
+							$("#nav").fadeTo(2500, 0)
+						}, 5000)
+					}
+				});
 			});
 		});
 		</script>

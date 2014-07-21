@@ -1,19 +1,22 @@
-<div id="nav">
-		{% for m, medium in media.items %}
-		<ul id="nav-for-medium-{{m}}" class="nav-medium">
-			{% for project in medium %}
-				{% with project.code|add:".html" as template %}
-					<li code="{{project.code}}" class="navitem"> 
-						<span class="project-title">{{project.title}}. </span>
-						<span class="project-tagline">{{project.tagline}}</span>
-						<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
-						<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
-						<span class="project-description">{{project.description}}</span>
-						<span class="project-materials">{{project.materials}}</span>
-						<span class="project-music">{{project.music}}</span>
-					</li>
-				{% endwith %}
-			{% endfor %}		
-		</ul>
-		{% endfor %}
-</div>	
+<div id="nav-wrapper">
+	<div id="nav">
+			{% for m, medium in media.items %}
+			<ul id="nav-for-medium-{{m}}" class="nav-medium">
+				{% for project in medium %}
+					{% with project.code|add:".html" as template %}
+						<li code="{{project.code}}" class="navitem"> 
+							<span class="project-title">{{project.title}}. </span>
+							<span class="project-tagline">{{project.tagline}}</span>
+							<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
+							<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
+							<span class="project-description">{{project.description}}</span>
+							<span class="project-materials">{{project.materials}}</span>
+							<span class="project-music">{{project.music}}</span>
+						</li>
+					{% endwith %}
+				{% endfor %}		
+			</ul>
+			{% endfor %}
+		<div id="scroll">&#9759;</div>
+	</div>	
+</div>

@@ -15,7 +15,7 @@ gallery.control = null;
 			// Create a project object for each
 			$.each(media, function(m, med){		
 				$.each(med, function(p, proj){
-					var project = control.element.find("#" + proj.code).project({
+					var project = control.element.find("ul[code=" + proj.code + "]").project({
 						code : proj.code,
 						medium : proj.medium,
 						order : proj.order,
@@ -38,10 +38,10 @@ gallery.control = null;
 			});
 
 			// Start with top-left
-			this._currentProject = this._getProject("multiverse");
-
+			this._currentProject = this._getProject('multiverse');
+			
 			// Start out with about
-			this._move(control._getProject("about"));			
+			this.nav.nav('select',  window.location.hash.replace("#", "") || 'about');	
 		},
 
 		_getProject : function(code) {

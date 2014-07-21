@@ -29,7 +29,7 @@ int bgColor = 0;
 PFont font;
 
 void setup() {
-  size(1280, 768);
+  size($(window).width(), $(window).height());
   colorMode(HSB, colorMax);
   background(bgColor);
   noFill();

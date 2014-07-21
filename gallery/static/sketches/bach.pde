@@ -12,11 +12,9 @@ float rFactorSpeed, gFactorSpeed, bFactorSpeed;
 float scaleX = 1;
 float scaleY = 1;
 
-boolean isTurningDown;
-boolean isTurningUp;
 
 void setup() {
-  size (1280, 768);
+  size($(window).width(), $(window).height());
   smooth();
 
   toss = 0;
@@ -37,7 +35,6 @@ void setup() {
   bFactorSpeed = 0.001;
   
   noLoop();
-  bach.volume = 0;
 }
 
 void draw() {
@@ -85,17 +82,12 @@ void draw() {
   curtain();
 }
 
-void getAudio() {
-	return bach;
-}
-
 void initialize() {                                              // create new springs and squares at a controlled rate using toss
   toss = int(random(1000));
   if(toss%33 == 0) {
     springs.add(new Spring((noise(t+random(10))*width*-1), (noise(t+random(100))*noise(t)*random(0.01))));
     squares.add(new Square((noise(t+random(100))*250)));
     t += random (-1, 5);
-    bach.play();         										                   // as soon as first spring/square is created, play music                 
   }
 }
 
@@ -112,10 +104,6 @@ void curtain() {                                               // if music is pl
 void resize(float _scaleX, float _scaleY) {
 	scaleX = _scaleX;
 	scaleY = _scaleY;
-}
-
-void reset() {
-	console.log(bach.currentTime);
 }
 
 class Spring {
