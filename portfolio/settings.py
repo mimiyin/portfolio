@@ -166,4 +166,4 @@ LOGGING = {
     }
 }
 
-from settings_local import *
+#from settings_local import *
