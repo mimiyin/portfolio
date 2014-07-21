@@ -18,6 +18,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     
-    (r'^static/(.*)', serve,   
+    url(r'^static/(.*)', serve,   
         {'document_root': os.path.join(os.path.dirname(__file__), "static")}),
 )
