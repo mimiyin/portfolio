@@ -16,4 +16,9 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    
+    (r'^js/(.*)', serve,   
+        {'document_root': os.path.join(os.path.dirname(__file__), "static")}),
+    (r'^css/(.*)', serve,   
+        {'document_root': os.path.join(os.path.dirname(__file__), "static")}),
 )
