@@ -113,6 +113,7 @@ li.title-slide span {
 
 span.project-title {
 	color: rgba(0,0,0,.33) !important;
+	font-size: 1.5em;
 }
 span.project-tagline {
 	color: rgba(0,0,0,.33) !important;
@@ -125,7 +126,7 @@ span.project-tagline {
 	position: absolute;
 	width: 100vw;
 	height: 100vh;
-	padding: 20vh 10vw;
+	padding: 15vh 10vw;
 	z-index: 100;
 	pointer-events: none;
 }
@@ -135,6 +136,7 @@ span.project-tagline {
 	width: 80vw;
 	height: auto;
 	opacity: 0;
+	font-size: 1.2em;
 }
 
 
