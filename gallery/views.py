@@ -7,7 +7,6 @@ import re
 
 
 def index(request):
-    project = request.path.replace(r'/', '' )
     projects = list(Project.objects.values().order_by('medium'))
     template = 'base.html'
     
@@ -22,7 +21,7 @@ def index(request):
         media[m].append(project)
 
     for m, medium in media.items():
-        medium = sorted(medium, key=lambda x: x['order'], reverse=True)
+        media[m] = sorted(medium, key=lambda x: x['order'])
 
     return render_to_response(template, { 'media' : media }, context_instance=RequestContext(request))
 

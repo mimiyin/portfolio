@@ -42,7 +42,7 @@ $.widget('doc.project', {
 		window.location.hash = this.options.code;
 	},
 	deselect : function() {
-		console.log("DESELECT!!!!");
+		console.log("DESELECTING", this.options.code);
 		this._stop();
 	}
 });

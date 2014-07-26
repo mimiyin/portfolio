@@ -19,6 +19,7 @@ html, body, div, span, p, img {
 	font-size: 1em;
 	text-align: center;
 	font-weight: normal;
+	z-index: 1;
 }
 
 .alert span {
@@ -58,7 +59,7 @@ li {
 
 
 #gallery {
-	position: relative;
+	position: fixed;
 	width: 400%;
 }
 
@@ -123,7 +124,7 @@ span.project-tagline {
 /* NAV */
 
 #nav-wrapper {
-	position: absolute;
+	position: fixed;
 	width: 100vw;
 	height: 100vh;
 	padding: 15vh 10vw;
@@ -136,7 +137,7 @@ span.project-tagline {
 	width: 80vw;
 	height: auto;
 	opacity: 0;
-	font-size: 1.2em;
+	font-size: 1.5vw;
 }
 
 

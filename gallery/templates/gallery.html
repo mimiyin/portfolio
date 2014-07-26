@@ -10,7 +10,6 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/processing.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/froogaloop.js"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{{STATIC_URL}}js/lib/jquery/jquery-plus.js"></script>{% endaddtoblock %}
-
 <div id="gallery">
 	{% for m, medium in media.items %}
 		<div id="medium-{{m}}" class="medium">
@@ -35,22 +34,35 @@
 	<div id="windows" class="alert">Best viewed in Chrome, Firefox or Safari.</div>
 <![endif]-->
 <!--[if !IE]> -->
-	<div class="alert"><span>&deg;</span> Turn your sound on, please. <span>&deg;</span> </div>
+	<div class="alert"><span>&deg;</span> Turn on your sound please. And wait for things to happen.<span>&deg;</span> </div>
 	<script type="text/javascript">
-		$(".alert").delay(10000).slideUp("slow");
+		$(".alert").delay(20000).slideUp("slow");
 		$(window).load(function(){
-			Processing.logger = console;
-			var media = {{media.items | jsonify }};
-			gallery.control.init(media);
-			$("body").fadeTo(2500, 1, function(){
-				$("#nav").fadeTo(5000, 1, function(){
-					if(window.location.hash != "#about") {
-						setTimeout(function(){
-							$("#nav").fadeTo(2500, 0)
-						}, 5000)
-					}
+			setTimeout(function(){
+				Processing.logger = console;
+				var media = {{media.items | jsonify }};
+				gallery.control.init(media);
+				$("body").fadeTo(2500, 1, function(){
+					$("#nav").fadeTo(5000, 1, function(){
+						if(window.location.hash != "#about") {
+							setTimeout(function(){
+								$("#nav").fadeTo(2500, 0)
+							}, 5000)
+						}
+					});
 				});
-			});
+			}, 500);
 		});
+
+		var getWindowSize = function () {
+			return { w : $(window).width(), h: $(window).height() };
+		}
+
+		var o = getWindowSize();
+		$(window).resize(function(){
+			var n = getWindowSize();
+			$("canvas").width(n.w).height(n.h);
+		});
+
 		</script>
 <!-- <![endif]-->

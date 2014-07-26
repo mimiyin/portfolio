@@ -8,24 +8,13 @@ $.widget('doc.player', {
 	},
 	_create : function() {
 		var $this = this;
-		this.id = this.element.find("canvas, iframe").attr("id");
-		this._on({
-			"click" : $this._toggle,
-		});
+		this.id = this.element.find("canvas, iframe").attr("id") || this.element.attr("name");
 
 		//Listen for focus and scroll on parent element
 		this.viewport = $(this.element.parents(".project")[0]);
 		this.viewport.on("scroll click", function(event){
 			$this._map();
 		});
-	},
-	_toggle : function() {
-		if(this.isPlaying) {
-			this.play();
-		}
-		else {
-			this.pause();
-		}
 	},
 	enter : function() {
 		console.log("ENTERING", this.id);
@@ -40,12 +29,9 @@ $.widget('doc.player', {
 	leave : function() {
 		console.log("LEAVING", this.id);
 		var $this = this;
-		this.isEntering = false;
-		this.isLeaving = true;
 		if(this.audio) {
 			this._turnDown(0, function(){
 				$this.pause();
-				$this.isLeaving = false;
 			});
 		}
 		else {
@@ -56,12 +42,12 @@ $.widget('doc.player', {
 		// Get the view height
 		var vh = $(window).height();
 		// Get the offset from the viewport
-		var acreage = parseInt((this.element.offset().top + vh) / vh);
-		console.log("MAPPING", this.id, this.element.offset().top, acreage);
-		if(acreage >= 0 && acreage <= 2) {
+		var acreage = Math.abs(parseInt((this.element.position().top) / vh));
+		console.log("MAPPING", this.id, this.element.position().top, acreage);
+		if(acreage >= 0 && acreage < 1) {
 			this.play();
 			if(this.audio) {
-				this._dial(acreage*0.5);
+				this._dial(1-acreage);
 			}
 		}
 		else {
@@ -88,11 +74,9 @@ $.widget('doc.player', {
 	},
 	_turnDown : function(goal, callback) { 
 		var $this = this;
-		while (this._get() > goal && this.isLeaving) {
-			console.log("TURNING DOWN!!! " + $this.id + "\tVOL: " + $this.audio.volume);
-			if(!$this.paused()) {
-				$this._down();
-			} 	
+		while (this._get() > goal && !this._paused()) {
+			console.log("TURNING DOWN!!! " + $this.id);
+			$this._down();
 		}
 		if(callback) {
 			callback();
@@ -100,30 +84,20 @@ $.widget('doc.player', {
 	},
 	_turnUp : function(goal, callback) { 
 		var $this = this;
-		while (this._get() < goal && !this.isLeaving) {
-			console.log("TURNING UP!!! " + $this.id + "\tVOL: " + $this.audio.volume);
-			if(!$this._paused()) {
-				$this._up();
-			}	
+		while (this._get() < goal && !this._paused()) {
+			console.log("TURNING UP!!! " + $this.id);
+			$this._up();
 		}
 		if(callback) {
 			callback();
 		}
 	},
 	_up : function() {
-		this._set(this._get() + 0.001);
+		this._set(this._get() + 0.0005);
 
 	},
 	_down : function() {
-		this._set(this._get() - 0.01);
-	},
-	_set : function(volume) {
-		if(volume >= 1) {
-			volume = 0.9999;
-		}
-		else if(volume < 0) {
-			volume = 0;
-		}
+		this._set(this._get() - 0.005);
 	}
 });
 
@@ -132,8 +106,9 @@ $.widget('doc.sketch', $.doc.player, {
 	},
 	_create : function() {
 		this._super();
-		this.sketch = Processing.getInstanceById(this.id);
+		this.sketch = Processing.getInstanceById(this.id) || this.element.data("sketch");
 		this.audio = this.element.find("audio")[0] || null;
+		console.log(this.id, this.audio);
 	},
 	_init : function() {
 		this.pause();
@@ -163,7 +138,7 @@ $.widget('doc.sketch', $.doc.player, {
 		return this.audio.volume;
 	},
 	_set : function(volume) {
-		this._super(volume);
+		volume = gallery.utils.constrain(volume, 0, 1);
 		this.audio.volume = volume;
 		console.log("SETTING", this.id, this.audio.volume);
 	}
@@ -211,7 +186,7 @@ $.widget('doc.vimeo', $.doc.player, {
 		});
 	},
 	_set : function(volume) {
-		this._super(volume);
+		volume = gallery.utils.constrain(volume, 0, 1);
 		this.vimeo.api("setVolume", volume);
 	}
 });

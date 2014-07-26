@@ -41,7 +41,7 @@ gallery.control = null;
 			this._currentProject = this._getProject('multiverse');
 			
 			// Start out with about
-			this.nav.nav('select',  window.location.hash.replace("#", "") || 'about');	
+			this.nav.nav('select',  window.location.hash.replace("#", "") || 'about');					
 		},
 
 		_getProject : function(code) {
@@ -57,10 +57,10 @@ gallery.control = null;
 			}
 
 			// Calculate shift for Project
-			var leftShift = this.currentProject.options.medium - project.options.medium;
-			var topShift =  this.currentProject.options.order - project.options.order;
+			var leftShift = project.options.medium;
+			var topShift =  project.options.order;
 
-			this.element.shift(leftShift, topShift, 100, 100, 'vh', 2500);
+			this.element.shift(-leftShift, -topShift, 100, 100, 2500);
 			
 			project.select();
 

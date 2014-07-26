@@ -5,13 +5,18 @@
 				{% for project in medium %}
 					{% with project.code|add:".html" as template %}
 						<li code="{{project.code}}" class="navitem"> 
-							<span class="project-title">{{project.title}}. </span>
+							<span class="project-title">
+								{% if project.title == "About" %}
+									&degC
+								{% else %}
+									{{project.title}}.
+								{% endif %} </span>
 							<span class="project-tagline">{{project.tagline}}</span>
-							<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
-							<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
 							<span class="project-description">{{project.description}}</span>
 							<span class="project-materials">{{project.materials}}</span>
-							<span class="project-music">{{project.music}}</span>
+							<span class="project-collaborators">{% if project.collaborators %}With {{project.collaborators}}.{% endif %}</span>
+							<span class="project-performed">{% if project.performers %}Performed by {{project.performers}}.{% endif %}</span>
+							<span class="project-music">{% if project.music %} Music: {{project.music}}{% endif %}</span>
 						</li>
 					{% endwith %}
 				{% endfor %}		
