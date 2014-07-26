@@ -108,7 +108,7 @@ $.widget('doc.sketch', $.doc.player, {
 		this._super();
 		this.sketch = Processing.getInstanceById(this.id) || this.element.data("sketch");
 		this.audio = this.element.find("audio")[0] || null;
-		console.log(this.id, this.audio);
+		console.log(this.id, this.sketch, this.audio);
 	},
 	_init : function() {
 		this.pause();

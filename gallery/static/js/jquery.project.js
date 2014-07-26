@@ -11,18 +11,6 @@ $.widget('doc.project', {
 	_load : function() {
 		var $this = this;
 
-		// Load sketches
-		this.sketches = this.element.find("[type=sketch]").sketch();
-
-		// Load the vimeos
-		this.vimeos = this.element.find("[type=vimeo]").vimeo();
-
-		// Load embedded websites
-		this.wwws = this.element.find("[type=www]");
-
-		// Load embedded flickr slideshows
-		this.flickrs = this.element.find("[type=flickr]");
-
 		// Slides
 		this.players = [];
 		$.each(this.element.find("li"), function(s, slide){
