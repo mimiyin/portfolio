@@ -42,7 +42,7 @@
 				Processing.logger = console;
 				var media = {{media.items | jsonify }};
 				gallery.control.init(media);
-				$("body").fadeTo(2500, 1, function(){
+				$("#gallery, #nav-wrapper").fadeTo(2500, 1, function(){
 					$("#nav").fadeTo(5000, 1, function(){
 						if(window.location.hash != "#about") {
 							setTimeout(function(){

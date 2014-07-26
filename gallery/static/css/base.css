@@ -38,7 +38,6 @@ body {
 	width: 100%;
 	height: 100vh;
 	overflow: hidden;
-	opacity: 0;
 }
 
 img {
@@ -61,6 +60,7 @@ li {
 #gallery {
 	position: fixed;
 	width: 400%;
+	opacity: 0;
 }
 
 .medium {
@@ -130,6 +130,7 @@ span.project-tagline {
 	padding: 15vh 10vw;
 	z-index: 100;
 	pointer-events: none;
+	opacity: 0;
 }
 
 
