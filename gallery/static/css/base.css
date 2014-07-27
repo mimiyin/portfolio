@@ -95,7 +95,7 @@ li {
 	left: -35vw;
 }
 
-#gallery .project li img, #gallery .project li embed {
+#gallery .project li img, #gallery .project li object {
 	min-width: 100%;
 	min-height: 100vh;
 }
