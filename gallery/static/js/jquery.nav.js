@@ -18,7 +18,8 @@ $.widget('doc.nav', {
 	},
 	_init : function() {
 		var $this = this;
-		this.scroll = this.element.find("#scroll")
+		this.scroll = this.element.find("#scroll");
+
 		this.navitems = this.element.find("li.navitem").navitem({
 			selected : function(event, ui) {
 				// Only show scroll hand if project has mult slides

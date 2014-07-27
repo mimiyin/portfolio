@@ -151,9 +151,6 @@ $.widget('doc.vimeo', $.doc.player, {
 		this._super();
 		this.vimeo = $f(this.element.find('iframe')[0]);
 		this.audio = {};
-		this.vimeo.api("getVolume", function(volume){
-			this.audio.volume = volume;
-		});
 	},
 	_init : function() {
 		var $this = this;
@@ -161,6 +158,9 @@ $.widget('doc.vimeo', $.doc.player, {
 		// Set volume to 0
 		this.vimeo.addEvent("ready", function(){
 			$this._set(0);
+			$this.vimeo.api("getVolume", function(volume){
+				$this.audio.volume = volume;
+			});
 		});
 
 		// Listen for finish

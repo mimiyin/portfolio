@@ -144,11 +144,24 @@ span.project-tagline {
 
 #nav #scroll {
 	position: fixed;
-	bottom: 10vh;
-	width: inherit;
-	text-align: center;
+	bottom: 0;
+	right: 0;
+	padding: 50px;
 	color: rgba(255,255,255,.5);
 	font-size: 10vh;
+	text-align: center;
+	z-index: 100;
+	pointer-events: all;
+	cursor: default;
+}
+#nav #scroll span {
+	width: 100%;
+}
+#nav #scroll #text {
+	font-size: 14px;
+	position: absolute;
+	top: 45px;
+	left: 0;
 }
 
 #nav ul {
