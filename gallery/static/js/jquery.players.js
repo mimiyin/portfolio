@@ -42,7 +42,7 @@ $.widget('doc.player', {
 		// Get the view height
 		var vh = $(window).height();
 		// Get the offset from the viewport
-		var acreage = Math.abs(parseInt((this.element.position().top) / vh));
+		var acreage = Math.abs(this.element.position().top / vh);
 		console.log("MAPPING", this.id, this.element.position().top, acreage);
 		if(acreage >= 0 && acreage < 1) {
 			this.play();
@@ -98,6 +98,9 @@ $.widget('doc.player', {
 	},
 	_down : function() {
 		this._set(this._get() - 0.005);
+	},
+	_get : function() {
+		return this.audio.volume;
 	}
 });
 
@@ -134,13 +137,9 @@ $.widget('doc.sketch', $.doc.player, {
 	_paused : function() {
 		return this.audio.paused;
 	},
-	_get : function() {
-		return this.audio.volume;
-	},
 	_set : function(volume) {
 		volume = gallery.utils.constrain(volume, 0, 1);
 		this.audio.volume = volume;
-		console.log("SETTING", this.id, this.audio.volume);
 	}
 });
 
@@ -151,7 +150,10 @@ $.widget('doc.vimeo', $.doc.player, {
 	_create : function() {
 		this._super();
 		this.vimeo = $f(this.element.find('iframe')[0]);
-		this.audio = this.vimeo;
+		this.audio = {};
+		this.vimeo.api("getVolume", function(volume){
+			this.audio.volume = volume;
+		});
 	},
 	_init : function() {
 		var $this = this;
@@ -180,13 +182,9 @@ $.widget('doc.vimeo', $.doc.player, {
 			return paused;
 		});
 	},
-	_get : function() {
-		this.vimeo.api("getVolume", function(volume){
-			return volume;
-		});
-	},
 	_set : function(volume) {
 		volume = gallery.utils.constrain(volume, 0, 1);
 		this.vimeo.api("setVolume", volume);
+		this.audio.volume = volume;
 	}
 });

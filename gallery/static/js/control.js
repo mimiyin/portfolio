@@ -60,6 +60,8 @@ gallery.control = null;
 			var leftShift = project.options.medium;
 			var topShift =  project.options.order;
 
+			console.log("SHIFT", leftShift, topShift);
+
 			this.element.shift(-leftShift, -topShift, 100, 100, 2500);
 			
 			project.select();
