@@ -9,7 +9,7 @@ $(document).ready(function(){
       var bg = 255;
 
       // Keeping track of voices
-      var maxVoices = 5; 
+      var maxVoices = 6; 
       var numVoices = 0;
       var voices = new doc.Voice(sketch);
 
