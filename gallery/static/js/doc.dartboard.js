@@ -2,7 +2,7 @@ var doc = doc || {};
 doc.Dartboard = null;
 
 (function(doc) {
-  var Dartboard = function(sketch, numZones, max){
+  var Dartboard = function(sketch, numZones, mult){
       this.sketch = sketch;
       this.zones = [];
       var offset = 0;
@@ -11,7 +11,8 @@ doc.Dartboard = null;
         this.zones[i] = offset;
         // Print out the values all in one line
       }
-      this.max = max || offset;
+      this.max = offset*mult || offset;
+      console.log("MAX: " + this.max);
   }
     
   // Fire at the dartboard
@@ -19,10 +20,10 @@ doc.Dartboard = null;
     var dart = this.sketch.random(0, this.max); 
     for (var i  = 0; i < this.zones.length; i++) {
       if ( dart <= this.zones[i]) {
-        return i+1;
+        return i;
       }
     }
-    return 0;
+    return -1;
   }
 
   doc.Dartboard = Dartboard;

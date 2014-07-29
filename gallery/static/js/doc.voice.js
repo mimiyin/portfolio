@@ -37,7 +37,7 @@ doc.Voice = null;
       //////////////////////////////////////////////////////////////////
       // Assign random frequencies and amplitudes
       var freq = this.sketch.random(0.01, 0.1);
-      var amp = this.sketch.random(100, 1000);
+      var amp = this.sketch.random(0, 5000);
       this.wave.init(0, freq, amp, amp);
 
       //Set lifespan of voice

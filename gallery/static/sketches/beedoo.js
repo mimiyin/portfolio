@@ -9,13 +9,13 @@ $(document).ready(function(){
       var bg = 255;
 
       // Keeping track of voices
-      var maxVoices = 6; 
+      var maxVoices = 5; 
       var numVoices = 0;
       var voices = new doc.Voice(sketch);
 
       // Dartboard to control probabilities of
       // adding voices and picking wave types
-      var vb = new doc.Dartboard(sketch, maxVoices, maxVoices*2);
+      var vb = new doc.Dartboard(sketch, maxVoices, 2);
 
       // Pitches
       var pitches = [];
@@ -78,7 +78,7 @@ $(document).ready(function(){
 
       // Decide how many voices to add
       sketch.cue = function() {
-        var numToAdd = vb.fire();
+        var numToAdd = vb.fire() + 1;
         console.log("CUE", numToAdd);
         if (numToAdd > 0) {
           sketch.add(numToAdd);
