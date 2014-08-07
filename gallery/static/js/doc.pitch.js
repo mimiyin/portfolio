@@ -6,7 +6,9 @@ doc.Pitch = null;
       this.sketch = sketch;
       this.audios = [];
       for(var a = 0; a < 50; a++) {
-        this.audios.push(audio.cloneNode(true));
+        var audio = audio.cloneNode(true);
+        audio.volume = .25;
+        this.audios.push(audio);
       }
       this.bm = 0;
   }
