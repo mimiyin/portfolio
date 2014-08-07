@@ -3,11 +3,12 @@ doc.Pitch = null;
 
 (function(doc) {
   var Pitch = function(sketch, audio){
+      audio.volume = 0.25;
       this.sketch = sketch;
       this.audios = [];
       for(var a = 0; a < 50; a++) {
         var audio = audio.cloneNode(true);
-        audio.volume = .25;
+        audio.volume = 0.25;
         this.audios.push(audio);
       }
       this.bm = 0;
