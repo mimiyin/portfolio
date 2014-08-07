@@ -101,7 +101,7 @@ li {
 }
 
 #gallery .project li[type=flickr] embed {
-	width: 100%;
+	min-width: 100%;
 	min-height: 150vh;
 	position: relative;
 }
