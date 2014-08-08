@@ -19,6 +19,9 @@ $.widget('doc.project', {
 				$this.players.push($(slide)[type]().data("doc-" + type));
 			}
 		});
+
+		// Websites
+		this.wwws = this.element.find("li[type=www] object");
 	},
 	_stop : function() {
 		$.each(this.players, function(p, player){
@@ -27,6 +30,12 @@ $.widget('doc.project', {
 	},
 	select : function() {
 		this.element.click();
+		$.each(this.wwws, function(w, www){
+			if(!$(www).attr("data")) {
+				$(www).attr("data", $(www).attr("lazy"));
+			}
+		});
+
 		window.location.hash = this.options.code;
 	},
 	deselect : function() {
